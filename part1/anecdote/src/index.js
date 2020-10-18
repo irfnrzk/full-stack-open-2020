@@ -5,20 +5,29 @@ const App = (props) => {
   const [selected, setSelected] = useState(0)
   const [points, setPoints] = useState([1, 4, 6, 3, 2, 0])
   const copy = [...points]
+  const [mostVotes, setMostVotes] = useState(copy.findIndex(x => x === Math.max(...copy)))
 
   const randomAnecdote = () => setSelected(Math.floor(Math.random() * 6))
 
   const vote = () => {
     copy[selected] += 1;
     setPoints(copy)
+    setMostVotes(copy.findIndex(x => x === Math.max(...copy)))
   }
 
   return (
     <div>
-      {props.anecdotes[selected]} <br /> has {copy[selected]} votes
       <div>
-        <button onClick={vote}>vote</button>
-        <button onClick={randomAnecdote}>next anecdote</button>
+        <h1>Anecdote of the day</h1>
+        {props.anecdotes[selected]} <br /> has {copy[selected]} votes
+        <div>
+          <button onClick={vote}>vote</button>
+          <button onClick={randomAnecdote}>next anecdote</button>
+        </div>
+      </div>
+      <div>
+        <h1>Anecdote with most votes</h1>
+        {props.anecdotes[mostVotes]} <br /> has {copy[mostVotes]} votes
       </div>
     </div>
   )
