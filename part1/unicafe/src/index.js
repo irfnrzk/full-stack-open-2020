@@ -1,6 +1,19 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+const Statistic = ({ text, value }) => {
+
+  return (
+    <>
+      <tr>
+        <td>{text}</td>
+        <td>{value} {(text === 'positive') ? '%' : ''}</td>
+      </tr>
+    </>
+  )
+
+}
+
 const Statistics = ({ value }) => {
 
   const total = () =>
@@ -10,7 +23,7 @@ const Statistics = ({ value }) => {
     (total() === 0) ? 0 : (value.good - value.bad) / total()
 
   const positive = () =>
-    (total() === 0) ? 0 : value.good / total()
+    (total() === 0) ? 0 : value.good / total() * 100
 
   if (
     value.good === 0 &&
@@ -27,15 +40,22 @@ const Statistics = ({ value }) => {
   return (
     <>
       <h1>statistics</h1>
-      <p>good {value.good}</p>
-      <p>neutral {value.neutral}</p>
-      <p>bad {value.bad}</p>
-      <p>all {total()}</p>
-      <p>average {average()}</p>
-      <p>positive {positive()} %</p>
+      <table>
+        <tbody>
+          <Statistic text="good" value={value.good} />
+          <Statistic text="neutral" value={value.neutral} />
+          <Statistic text="bad" value={value.bad} />
+          <Statistic text="total" value={total()} />
+          <Statistic text="average" value={average()} />
+          <Statistic text="positive" value={positive()} />
+        </tbody>
+      </table>
     </>
   )
 }
+
+const Button = ({ text, handleClick }) =>
+  <button onClick={handleClick}>{text}</button>
 
 const App = () => {
   // save clicks of each button to its own state
@@ -47,9 +67,9 @@ const App = () => {
     <div>
       <div>
         <h1>give feedback</h1>
-        <button onClick={() => setGood(good + 1)}>good</button>
-        <button onClick={() => setNeutral(neutral + 1)}>neutral</button>
-        <button onClick={() => setBad(bad + 1)}>bad</button>
+        <Button text="good" handleClick={() => setGood(good + 1)} />
+        <Button text="neutral" handleClick={() => setNeutral(neutral + 1)} />
+        <Button text="bad" handleClick={() => setBad(bad + 1)} />
       </div>
       <Statistics value={{ good, neutral, bad }} />
     </div>
