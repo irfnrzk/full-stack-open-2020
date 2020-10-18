@@ -12,6 +12,18 @@ const Statistics = ({ value }) => {
   const positive = () =>
     (total() === 0) ? 0 : value.good / total()
 
+  if (
+    value.good === 0 &&
+    value.bad === 0 &&
+    value.neutral === 0
+  ) {
+    return (
+      <>
+        <p>No feedback given</p>
+      </>
+    )
+  }
+
   return (
     <>
       <h1>statistics</h1>
