@@ -7,7 +7,6 @@ const Header = ({ course }) => {
 }
 
 const Part = (props) => {
-  console.log(props)
   return (
     <p>
       {props.part.name} {props.part.exercises}
@@ -16,7 +15,6 @@ const Part = (props) => {
 }
 
 const Content = ({ course }) => {
-  console.log(course.parts)
   return (
     <div>
       {
@@ -27,20 +25,16 @@ const Content = ({ course }) => {
 }
 
 const Total = ({ course }) => {
-
   const total = course.parts.reduce((s, p) => s + p.exercises, 0)
-
   return (
     <>
       <strong>total of {total} exercises</strong>
     </>
   )
-
 }
 
 const Course = ({ course }) => {
   console.log(course)
-
   return (
     <>
       <Header course={course} />
@@ -48,7 +42,6 @@ const Course = ({ course }) => {
       <Total course={course} />
     </>
   )
-
 }
 
 export default Course
