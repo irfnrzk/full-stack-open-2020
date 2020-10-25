@@ -31,6 +31,21 @@ const App = () => {
     console.log(persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase())))
   }
 
+  const handleDeletePerson = (event) => {
+
+    const _id = parseInt(event.target.attributes['data-id'].value);
+
+    event.preventDefault();
+    if (window.confirm(`Delete ${event.target.attributes['data-name'].value}`)) {
+      personService
+        .remove(_id)
+        .then(res => {
+          setPersons(persons.filter(n => n.id !== _id))
+        })
+    }
+
+  }
+
   const addName = (event) => {
     event.preventDefault()
 
@@ -77,6 +92,7 @@ const App = () => {
       <Persons
         persons={persons}
         newSearch={newSearch}
+        handleDeletePerson={handleDeletePerson}
       />
     </div>
   )
