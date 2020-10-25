@@ -49,20 +49,27 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
 
-    console.log(newName)
-    console.log(persons)
-    console.log(persons.filter(person => person.name === newName))
+    // console.log(newName)
+    // console.log(persons)
+    // console.log(persons.filter(person => person.name === newName))
+
+    const personObject = {
+      name: newName,
+      number: newNumber
+    }
 
     // check if name already exists
     if (persons.filter(person => person.name === newName)[0]) {
-      alert(`${newName} is already added to phonebook`)
-    } else {
-
-      const personObject = {
-        name: newName,
-        number: newNumber
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const _id = persons.filter(person => person.name === newName)[0].id;
+        personService
+          .update(_id, personObject)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== _id ? person : returnedPerson))
+            // console.log(persons)
+          })
       }
-
+    } else {
       personService
         .create(personObject)
         .then(returnedPerson => {
