@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import Country from './components/Country'
 
 const App = () => {
 
   const [countries, setCountries] = useState([])
   const [newSearch, setNewSearch] = useState('')
   const [error, setError] = useState(false)
+  const [show, setShow] = useState(false)
+  const [selectedIdx, setSelectedIdx] = useState(0)
 
   const handleOnSearch = (event) => {
 
     event.preventDefault()
     setNewSearch(event.target.value)
 
+  }
+
+  const handleClick = (event) => {
+    console.log(event.target.value)
+    setSelectedIdx(countries.findIndex(country => country.name === event.target.value))
+    // event.preventDefault()
+    setShow(true)
   }
 
   useEffect(() => {
@@ -27,11 +37,13 @@ const App = () => {
         .then(res => {
           setCountries(res.data)
           setError(false)
+          res.data.length === 1 ? setShow(true) : setShow(false)
         })
         .catch(err => {
           setError(true)
           if (err.message === undefined) {
             setError(false)
+            setShow(false)
           } else {
             setCountries([])
           }
@@ -61,19 +73,14 @@ const App = () => {
               countries.length > 10 ?
                 <div>Too many matches, specify another filter</div> :
                 countries.length === 1 ?
-                  <div>
-                    <h1>{countries[0].name}</h1>
-                    <div>capital {countries[0].capital}</div>
-                    <div>population {countries[0].population}</div>
-                    <h2>languages</h2>
-                    <ul>
-                      {
-                        countries[0].languages.map(lang => <li key={lang.name}>{lang.name}</li>)
-                      }
-                    </ul>
-                    <img src={countries[0].flag} alt={countries[0].name} style={{ width: '150px' }} />
-                  </div> :
-                  countries.map(country => <div key={country.name}>{country.name}</div>)
+                  <Country country={countries[0]} /> :
+                  show ?
+                    <Country country={countries[selectedIdx]} /> :
+                    countries.map(country =>
+                      <div key={country.name}>{country.name}
+                        <button value={country.name} onClick={handleClick}>show</button>
+                      </div>
+                    )
         }
       </div>
     </div>
