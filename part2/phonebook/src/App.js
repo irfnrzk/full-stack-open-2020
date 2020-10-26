@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/persons'
@@ -9,6 +10,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [successMessage, setSuccessMessage] = useState('some error happened...')
+  const [showNotification, setShowNotification] = useState(false)
+  const [styleClass, setStyleClass] = useState('')
 
   useEffect(() => {
     personService
@@ -49,10 +53,6 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
 
-    // console.log(newName)
-    // console.log(persons)
-    // console.log(persons.filter(person => person.name === newName))
-
     const personObject = {
       name: newName,
       number: newNumber
@@ -65,17 +65,44 @@ const App = () => {
         personService
           .update(_id, personObject)
           .then(returnedPerson => {
+            // update list
             setPersons(persons.map(person => person.id !== _id ? person : returnedPerson))
-            // console.log(persons)
+
+            // reset fields
+            setNewName('')
+            setNewNumber('')
+
+            // trigger notification
+            setSuccessMessage(`Updated ${newName}'s phone number`)
+            setStyleClass(`success`)
+            setShowNotification(true)
+
+            // reset notification
+            setTimeout(() => {
+              setShowNotification(false)
+            }, 2000);
           })
       }
     } else {
       personService
         .create(personObject)
         .then(returnedPerson => {
+          // add to list
           setPersons(persons.concat(returnedPerson))
+
+          // reset fields
           setNewName('')
           setNewNumber('')
+
+          // trigger notification
+          setSuccessMessage(`Added ${newName}`)
+          setStyleClass(`success`)
+          setShowNotification(true)
+
+          // reset notification
+          setTimeout(() => {
+            setShowNotification(false)
+          }, 2000);
         })
     }
   }
@@ -83,6 +110,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {
+        showNotification &&
+        <Notification message={successMessage} styleClass={styleClass} />
+      }
       <Filter
         newSearch={newSearch}
         handleSearchChange={handleSearchChange}
