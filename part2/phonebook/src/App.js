@@ -38,13 +38,26 @@ const App = () => {
   const handleDeletePerson = (event) => {
 
     const _id = parseInt(event.target.attributes['data-id'].value);
+    const _name = event.target.attributes['data-name'].value;
 
     event.preventDefault();
     if (window.confirm(`Delete ${event.target.attributes['data-name'].value}`)) {
       personService
         .remove(_id)
         .then(res => {
+          // delete from list
           setPersons(persons.filter(n => n.id !== _id))
+        })
+        .catch(err => {
+          // trigger notification
+          setSuccessMessage(`Information of ${_name} has alread been removed from server`)
+          setStyleClass(`error`)
+          setShowNotification(true)
+
+          // reset notification
+          setTimeout(() => {
+            setShowNotification(false)
+          }, 2000);
         })
     }
 
