@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const moment = require('moment')
 
 let persons = [
   {
@@ -29,6 +30,13 @@ app.get('/', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
+})
+
+app.get('/info', (request, response) => {
+
+  const timestamp = moment().format("ddd MMM D HH:mm:ss Z");
+
+  response.send('<p>Phonebook has info for ' + persons.length + ' people</p><p>' + timestamp + '</p>')
 })
 
 const PORT = 3001
