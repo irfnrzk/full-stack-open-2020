@@ -68,10 +68,18 @@ app.delete('/api/persons/:id', (request, response) => {
 // 3.5
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  // console.log(person)
+  console.log(body)
 
   function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
+  }
+
+  if (persons.find(person => person.name === body.name)) {
+    return response.status(403).send({ error: 'name must be unique' })
+  }
+
+  if (body.name === '' || body.number === '') {
+    return response.status(403).send({ error: 'name and number cannot be empty' })
   }
 
   const person = {
