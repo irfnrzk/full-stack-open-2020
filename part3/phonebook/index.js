@@ -1,9 +1,10 @@
-const { request, response } = require('express')
 const express = require('express')
-const app = express()
 const moment = require('moment')
+const morgan = require('morgan')
 
+const app = express()
 app.use(express.json())
+app.use(morgan('tiny'))
 
 let persons = [
   {
@@ -68,7 +69,7 @@ app.delete('/api/persons/:id', (request, response) => {
 // 3.5
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log(body)
+  // console.log(body)
 
   function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
