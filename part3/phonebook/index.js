@@ -40,9 +40,11 @@ let persons = [
   }
 ]
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
-})
+app.use(express.static('build'))
+
+// app.get('/', (request, response) => {
+//   response.send('<h1>Hello World!</h1>')
+// })
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
@@ -102,6 +104,19 @@ app.post('/api/persons', (request, response) => {
 
   persons = persons.concat(person)
   response.json(persons)
+
+})
+
+app.put('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  const person = persons.find(person => person.id === id)
+
+  if (person) {
+    person.number = request.body.number
+    response.json(person)
+  } else {
+    response.status(404).end()
+  }
 
 })
 
