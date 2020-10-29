@@ -89,22 +89,22 @@ app.post('/api/persons', (request, response) => {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(403).send({ error: 'name must be unique' })
-  }
+  // if (persons.find(person => person.name === body.name)) {
+  //   return response.status(403).send({ error: 'name must be unique' })
+  // }
 
   if (body.name === '' || body.number === '') {
     return response.status(403).send({ error: 'name and number cannot be empty' })
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: getRandomInt(99999)
-  }
+  })
 
-  persons = persons.concat(person)
-  response.json(persons)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 
 })
 
