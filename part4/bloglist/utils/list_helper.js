@@ -3,6 +3,8 @@ const dummy = (blogs) => {
   return 1
 }
 
+
+//  function returns the total sum of likes in all of the blog posts
 const totalLikes = (blogs) => {
 
   let sum = 0
@@ -17,7 +19,18 @@ const totalLikes = (blogs) => {
 
 }
 
+
+//  function finds out which blog has most likes
+//  ff there are many top favorites, it is enough to return one of them
+const favoriteBlog = (blogs) => {
+
+  const max = blogs.reduce((prev, current) => (prev.likes > current.likes) ? prev : current)
+  return max
+
+}
+
 module.exports = {
   dummy,
-  totalLikes
+  totalLikes,
+  favoriteBlog
 }
