@@ -95,6 +95,23 @@ const App = () => {
               setShowNotification(false)
             }, 2000);
           })
+          .catch(err => {
+            // trigger notification
+            setSuccessMessage(
+              err.response.status === 500 ?
+                err.response.data :
+                err.response.status === 400 ?
+                  err.response.data.error :
+                  err.response.data
+            )
+            setStyleClass(`error`)
+            setShowNotification(true)
+
+            // reset notification
+            setTimeout(() => {
+              setShowNotification(false)
+            }, 2000);
+          })
       }
     } else {
       personService
@@ -110,6 +127,23 @@ const App = () => {
           // trigger notification
           setSuccessMessage(`Added ${newName}`)
           setStyleClass(`success`)
+          setShowNotification(true)
+
+          // reset notification
+          setTimeout(() => {
+            setShowNotification(false)
+          }, 2000);
+        })
+        .catch(err => {
+          // trigger notification
+          setSuccessMessage(
+            err.response.status === 500 ?
+              err.response.data :
+              err.response.status === 400 ?
+                err.response.data.error :
+                err.response.data
+          )
+          setStyleClass(`error`)
           setShowNotification(true)
 
           // reset notification
