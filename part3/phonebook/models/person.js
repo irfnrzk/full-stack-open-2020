@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require('mongoose-unique-validator')
 const url = process.env.MONGODB_URI
 
 console.log('connecting to', url)
@@ -10,7 +10,7 @@ mongoose.connect(url, {
   useFindAndModify: false,
   useCreateIndex: true
 })
-  .then(result => {
+  .then(result => { // eslint-disable-line
     console.log('connected to MongoDB')
   })
   .catch((error) => {
@@ -41,6 +41,6 @@ personSchema.set('toJSON', {
   }
 })
 
-personSchema.plugin(uniqueValidator);
+personSchema.plugin(uniqueValidator)
 
 module.exports = mongoose.model('Person', personSchema)

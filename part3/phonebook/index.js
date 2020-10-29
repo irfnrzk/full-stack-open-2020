@@ -7,7 +7,9 @@ const Person = require('./models/person')
 const app = express()
 app.use(express.json())
 
-morgan.token('body', (req, res) => req.method === 'POST' ? JSON.stringify(req.body) : null)
+morgan.token('body', (req, res) =>  // eslint-disable-line
+  req.method === 'POST' ? JSON.stringify(req.body) : null
+)
 app.use(morgan(function (tokens, req, res) {
   return [
     tokens.method(req, res),
@@ -44,7 +46,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.delete('/api/persons/:id', (request, response, next) => {
   Person
     .findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(result => { // eslint-disable-line
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -74,11 +76,6 @@ app.post('/api/persons', (request, response, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
 
-  const person = {
-    name: body.name,
-    number: body.number,
-  }
-
   Person
     .findByIdAndUpdate(
       request.params.id,
@@ -95,7 +92,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response, next) => {
-  const timestamp = moment().format("ddd MMM D HH:mm:ss Z");
+  const timestamp = moment().format('ddd MMM D HH:mm:ss Z')
 
   Person
     .find({})
@@ -105,7 +102,7 @@ app.get('/info', (request, response, next) => {
     .catch(error => next(error))
 })
 
-const unknownEndpoint = (request, response, next) => {
+const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
