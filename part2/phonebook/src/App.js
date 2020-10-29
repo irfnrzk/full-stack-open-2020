@@ -37,7 +37,7 @@ const App = () => {
 
   const handleDeletePerson = (event) => {
 
-    const _id = parseInt(event.target.attributes['data-id'].value);
+    const _id = event.target.attributes['data-id'].value;
     const _name = event.target.attributes['data-name'].value;
 
     event.preventDefault();
