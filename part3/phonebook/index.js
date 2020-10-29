@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const moment = require('moment')
 const morgan = require('morgan')
+const Person = require('./models/person')
 
 const app = express()
 app.use(express.json())
@@ -17,28 +19,28 @@ app.use(morgan(function (tokens, req, res) {
   ].join(' ')
 }))
 
-let persons = [
-  {
-    "name": "Arto Hellas",
-    "number": "040-123456",
-    "id": 1
-  },
-  {
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523",
-    "id": 2
-  },
-  {
-    "name": "Dan Abramov",
-    "number": "12-43-234345",
-    "id": 3
-  },
-  {
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122",
-    "id": 4
-  }
-]
+// let persons = [
+//   {
+//     "name": "Arto Hellas",
+//     "number": "040-123456",
+//     "id": 1
+//   },
+//   {
+//     "name": "Ada Lovelace",
+//     "number": "39-44-5323523",
+//     "id": 2
+//   },
+//   {
+//     "name": "Dan Abramov",
+//     "number": "12-43-234345",
+//     "id": 3
+//   },
+//   {
+//     "name": "Mary Poppendieck",
+//     "number": "39-23-6423122",
+//     "id": 4
+//   }
+// ]
 
 app.use(express.static('build'))
 
@@ -47,21 +49,20 @@ app.use(express.static('build'))
 // })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person
+    .find({})
+    .then(persons => {
+      response.json(persons)
+    })
 })
 
 // 3.3
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
-
+  Person
+    .findById(request.params.id)
+    .then(person => {
+      response.json(person)
+    })
 })
 
 // 3.4
