@@ -89,7 +89,13 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.get('/info', (request, response, next) => {
   const timestamp = moment().format("ddd MMM D HH:mm:ss Z");
-  response.send('<p>Phonebook has info for ' + persons.length + ' people</p><p>' + timestamp + '</p>')
+
+  Person
+    .find({})
+    .then(persons => {
+      response.send('<p>Phonebook has info for ' + persons.length + ' people</p><p>' + timestamp + '</p>')
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response, next) => {
