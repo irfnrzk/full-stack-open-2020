@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const dummy = (blogs) => {
   let Arr = blogs // eslint-disable-line
   return 1
@@ -19,9 +21,8 @@ const totalLikes = (blogs) => {
 
 }
 
-
-//  function finds out which blog has most likes
-//  ff there are many top favorites, it is enough to return one of them
+//  function returns the author who has the largest amount of blogs
+//  the return value also contains the number of blogs the top author has
 const favoriteBlog = (blogs) => {
 
   const max = blogs.reduce((prev, current) => (prev.likes > current.likes) ? prev : current)
@@ -29,8 +30,42 @@ const favoriteBlog = (blogs) => {
 
 }
 
+//  function finds out which blog has most likes
+//  if there are many top favorites, it is enough to return one of them
+const mostBlogs = (blogs) => {
+
+  const unique = _.uniqBy(blogs, 'author')
+
+  let authors = []
+  unique.forEach(author => { authors.push(author.author) })
+
+  const countList = authors.map(author => {
+    return {
+      author: author,
+      blogs: (() => {
+        let count = 0
+        blogs.forEach(blog => {
+          if (blog.author === author) {
+            count++
+          }
+        })
+        return count
+      })()
+    }
+  })
+
+  const max = countList.reduce((prev, current) =>
+    (prev.blogs > current.blogs) ?
+      prev :
+      current
+  )
+
+  return max
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }

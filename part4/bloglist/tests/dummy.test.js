@@ -97,3 +97,15 @@ describe('favourite blog', () => {
     expect(result).toMatchObject(favouriteBlog)
   })
 })
+
+describe('most blogs', () => {
+  const mostBlogs = {
+    author: 'Robert C. Martin',
+    blogs: 3
+  }
+
+  test('most blogs', () => {
+    const result = listHelper.mostBlogs(listWithManyBlog)
+    expect(result).toMatchObject(mostBlogs)
+  })
+})
