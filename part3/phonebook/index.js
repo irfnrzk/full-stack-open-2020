@@ -19,34 +19,7 @@ app.use(morgan(function (tokens, req, res) {
   ].join(' ')
 }))
 
-// let persons = [
-//   {
-//     "name": "Arto Hellas",
-//     "number": "040-123456",
-//     "id": 1
-//   },
-//   {
-//     "name": "Ada Lovelace",
-//     "number": "39-44-5323523",
-//     "id": 2
-//   },
-//   {
-//     "name": "Dan Abramov",
-//     "number": "12-43-234345",
-//     "id": 3
-//   },
-//   {
-//     "name": "Mary Poppendieck",
-//     "number": "39-23-6423122",
-//     "id": 4
-//   }
-// ]
-
 app.use(express.static('build'))
-
-// app.get('/', (request, response, next) => {
-//   response.send('<h1>Hello World!</h1>')
-// })
 
 app.get('/api/persons', (request, response, next) => {
   Person
@@ -80,15 +53,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
 // 3.5
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  // console.log(body)
-
-  function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-  }
-
-  // if (persons.find(person => person.name === body.name)) {
-  //   return response.status(403).send({ error: 'name must be unique' })
-  // }
 
   if (body.name === '' || body.number === '') {
     return response.status(403).send({ error: 'name and number cannot be empty' })
@@ -105,20 +69,22 @@ app.post('/api/persons', (request, response, next) => {
       response.json(savedPerson)
     })
     .catch(error => next(error))
-
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
+  const body = request.body
 
-  if (person) {
-    person.number = request.body.number
-    response.json(person)
-  } else {
-    response.status(404).end()
+  const person = {
+    name: body.name,
+    number: body.number,
   }
 
+  Person
+    .findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response, next) => {
