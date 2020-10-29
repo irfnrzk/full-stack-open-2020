@@ -44,37 +44,41 @@ app.use(morgan(function (tokens, req, res) {
 
 app.use(express.static('build'))
 
-// app.get('/', (request, response) => {
+// app.get('/', (request, response, next) => {
 //   response.send('<h1>Hello World!</h1>')
 // })
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Person
     .find({})
     .then(persons => {
       response.json(persons)
     })
+    .catch(error => next(error))
 })
 
 // 3.3
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person
     .findById(request.params.id)
     .then(person => {
       response.json(person)
     })
+    .catch(error => next(error))
 })
 
 // 3.4
-app.delete('/api/persons/:id', (request, response) => {
-  Person.findByIdAndRemove(request.params.id)
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person
+    .findByIdAndRemove(request.params.id)
     .then(result => {
       response.status(204).end()
     })
+    .catch(error => next(error))
 })
 
 // 3.5
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   // console.log(body)
 
@@ -95,13 +99,16 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   })
 
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  person
+    .save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => next(error))
 
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const id = Number(request.params.id)
   const person = persons.find(person => person.id === id)
 
@@ -114,11 +121,32 @@ app.put('/api/persons/:id', (request, response) => {
 
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   const timestamp = moment().format("ddd MMM D HH:mm:ss Z");
-
   response.send('<p>Phonebook has info for ' + persons.length + ' people</p><p>' + timestamp + '</p>')
 })
+
+const unknownEndpoint = (request, response, next) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  response.status(500).end()
+
+  next(error)
+}
+
+// handler of requests with result to errors
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
