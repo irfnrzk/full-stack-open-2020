@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
-// const Blogs = require('../controllers/blogs')
 const Blog = require('../models/blog')
 const listWithManyBlog = [
   {
@@ -148,6 +147,38 @@ test('default like is 0 when missing from post body', async () => {
 
   const response = await api.get('/api/blogs')
   expect(response.body[listWithManyBlog.length]).toHaveProperty('likes', 0)
+})
+
+// 4.12 verifies if the title and url properties are missing from the request data, the backend responds to the request with the status code 400 Bad Request
+describe('respond 400 if title and url are missing from post body', () => {
+
+  test('respond 400 if title is missing from post body', async () => {
+    await api.get('/api/blogs')
+    const blog = {
+      author: 'Matti Luukainen',
+      url: 'https://fullstackopen.com/en',
+      likes: 15,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(400)
+  })
+
+  test('respond 400 if url is missing from post body', async () => {
+    await api.get('/api/blogs')
+    const blog = {
+      title: 'Fullstack Open 2020',
+      author: 'Matti Luukainen',
+      likes: 15,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(400)
+  })
 })
 
 afterAll(() => {
