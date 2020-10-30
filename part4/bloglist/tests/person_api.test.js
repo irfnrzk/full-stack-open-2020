@@ -73,6 +73,66 @@ test('blogs have an id property', async () => {
   })
 })
 
+// 4.10 verifies that making an HTTP POST request to the /api/blogs url successfully creates a new blog post
+describe('successful blog post', () => {
+
+  test('total blogs increased by 1', async () => {
+    await api.get('/api/blogs')
+    const blog = {
+      title: 'Fullstack Open 2020',
+      author: 'Matti Luukainen',
+      url: 'https://fullstackopen.com/en',
+      likes: 15,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(listWithManyBlog.length + 1)
+  })
+
+  test('blog post returns 201 created & json', async () => {
+    await api.get('/api/blogs')
+    const blog = {
+      title: 'Fullstack Open 2020',
+      author: 'Matti Luukainen',
+      url: 'https://fullstackopen.com/en',
+      likes: 15,
+    }
+
+    const response = await api
+      .post('/api/blogs')
+      .send({
+        title: 'Fullstack Open 2020',
+        author: 'Matti Luukainen',
+        url: 'https://fullstackopen.com/en',
+        likes: 15,
+      })
+      .expect(201)
+
+    expect(response.body).toMatchObject(blog)
+  })
+
+  test('content of the blog post is saved correctly', async () => {
+    await api.get('/api/blogs')
+    const blog = {
+      title: 'Fullstack Open 2020',
+      author: 'Matti Luukainen',
+      url: 'https://fullstackopen.com/en',
+      likes: 15,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+
+    const response = await api.get('/api/blogs')
+    expect(response.body[listWithManyBlog.length]).toMatchObject(blog)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
