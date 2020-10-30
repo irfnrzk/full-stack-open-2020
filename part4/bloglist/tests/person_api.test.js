@@ -207,6 +207,51 @@ describe('remove blog post with HTTP DELETE request to /api/blogs/:id', () => {
   })
 })
 
+// 4.14 verifies that making an HTTP PUT request to the /api/blogs/:id updates the post
+describe('update blog post with HTTP PUT request to /api/blogs/:id', () => {
+
+  test('update post returns 201 created & json', async () => {
+    let id
+    await api
+      .get('/api/blogs')
+      .then(res => id = res.body[listWithManyBlog.length - 1].id)
+
+    const updateBlog = {
+      title: 'Type wars',
+      author: 'Robert C. Martin',
+      url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+      likes: 10,
+    }
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(updateBlog)
+      .expect(200)
+
+    const response = await api.get(`/api/blogs/${id}`)
+    expect(response.body).toMatchObject(updateBlog)
+  })
+
+  test('update amount of likes', async () => {
+    let id
+    await api
+      .get('/api/blogs')
+      .then(res => id = res.body[listWithManyBlog.length - 1].id)
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send({
+        title: 'Type wars',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+        likes: 10,
+      })
+
+    const response = await api.get(`/api/blogs/${id}`)
+    expect(response.body.likes).toBe(10)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })

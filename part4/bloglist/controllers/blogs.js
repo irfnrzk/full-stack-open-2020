@@ -29,8 +29,29 @@ blogsRouter
       likes: body.likes || 0,
       author: body.author
     })
+
     const savedBlog = await blog.save()
     response.status(201).json(savedBlog)
+  })
+
+  .put('/:id', async (request, response) => {
+    const body = request.body
+    const blog = {
+      title: body.title,
+      url: body.url,
+      likes: body.likes || 0,
+      author: body.author
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      blog,
+      {
+        new: true,
+        runValidators: true
+      }
+    )
+    response.json(updatedBlog)
   })
 
 module.exports = blogsRouter
