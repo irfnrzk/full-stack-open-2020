@@ -59,10 +59,18 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-// verify that the blog list application returns the correct amount of blog posts in the JSON format.
+// 4.8 verify that the blog list application returns the correct amount of blog posts in the JSON format.
 test('blogs length', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(listWithManyBlog.length)
+})
+
+// 4.9 verifies that the unique identifier property of the blog posts is named id
+test('blogs have an id property', async () => {
+  const response = await api.get('/api/blogs')
+  response.body.forEach(el => {
+    expect(el.id).toBeDefined()
+  })
 })
 
 afterAll(() => {
