@@ -13,7 +13,13 @@ blogsRouter
   })
 
   .post('/', async (request, response) => {
-    const blog = new Blog(request.body)
+    const body = request.body
+    const blog = new Blog({
+      title: body.title,
+      url: body.url,
+      likes: body.likes || 0,
+      author: body.author
+    })
     const savedBlog = await blog.save()
     if (savedBlog) {
       response.status(201).json(savedBlog)

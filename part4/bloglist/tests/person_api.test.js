@@ -133,6 +133,23 @@ describe('successful blog post', () => {
   })
 })
 
+// 4.11 verifies if the likes property is missing from the request, it will default to 0
+test('default like is 0 when missing from post body', async () => {
+  await api.get('/api/blogs')
+  const blog = {
+    title: 'Fullstack Open 2020',
+    author: 'Matti Luukainen',
+    url: 'https://fullstackopen.com/en'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(blog)
+
+  const response = await api.get('/api/blogs')
+  expect(response.body[listWithManyBlog.length]).toHaveProperty('likes', 0)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
