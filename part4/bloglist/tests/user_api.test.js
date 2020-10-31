@@ -55,6 +55,88 @@ describe('when there is initially one user in db', () => {
     const usersAtEnd = await api.get('/api/users')
     expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length)
   })
+
+  test('creation fails with proper statuscode and message if username is less than 3 characters', async () => {
+    const usersAtStart = await api.get('/api/users')
+
+    const newUser = {
+      username: 'ro',
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('shorter than the minimum allowed length')
+
+    const usersAtEnd = await api.get('/api/users')
+    expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length)
+  })
+
+  test('creation fails with proper statuscode and message if password is less than 3 characters', async () => {
+    const usersAtStart = await api.get('/api/users')
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'sa',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Password is too short')
+
+    const usersAtEnd = await api.get('/api/users')
+    expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length)
+  })
+
+  test('creation fails with proper statuscode if username is missing', async () => {
+    const usersAtStart = await api.get('/api/users')
+
+    const newUser = {
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('`username` is required')
+
+    const usersAtEnd = await api.get('/api/users')
+    expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length)
+  })
+
+  test('creation fails with proper statuscode if password is missing', async () => {
+    const usersAtStart = await api.get('/api/users')
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Password is required')
+
+    const usersAtEnd = await api.get('/api/users')
+    expect(usersAtEnd.body).toHaveLength(usersAtStart.body.length)
+  })
 })
 
 afterAll(() => {

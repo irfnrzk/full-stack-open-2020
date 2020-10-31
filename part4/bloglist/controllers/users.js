@@ -11,6 +11,19 @@ usersRouter
   .post('/', async (request, response) => {
     const body = request.body
 
+    if (!request.body.password) {
+      throw ({
+        name: 'ValidationError',
+        message: 'Password is required!'
+      })
+    }
+
+    if (request.body.password.length <= 3) {
+      throw ({
+        name: 'ValidationError',
+        message: 'Password is too short!'
+      })
+    }
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(body.password, saltRounds)
 
