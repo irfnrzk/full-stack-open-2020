@@ -33,8 +33,20 @@ blogsRouter
   })
 
   .delete('/:id', async (request, response) => {
-    await Blog.findByIdAndDelete(request.params.id)
-    response.status(204).end()
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    const user = await User.findById(decodedToken.id)
+
+    // find id of user who posted the blog
+    const blog = await Blog.findById(request.params.id)
+    if (blog.user.toString() === user._id.toString()) {
+      await Blog.findByIdAndDelete(request.params.id)
+      response.status(204).end()
+    } else {
+      response.status(401).end('Unauthorized')
+    }
+
+    // await Blog.findByIdAndDelete(request.params.id)
+
   })
 
   .post('/', async (request, response) => {
