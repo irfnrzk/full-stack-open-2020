@@ -45,8 +45,6 @@ blogsRouter
       response.status(401).end('Unauthorized')
     }
 
-    // await Blog.findByIdAndDelete(request.params.id)
-
   })
 
   .post('/', async (request, response) => {
@@ -70,22 +68,31 @@ blogsRouter
 
   .put('/:id', async (request, response) => {
     const body = request.body
-    const blog = {
-      title: body.title,
-      url: body.url,
-      likes: body.likes || 0,
-      author: body.author
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    const user = await User.findById(decodedToken.id)
+
+    // find id of user who posted the blog
+    const blog = await Blog.findById(request.params.id)
+    if (blog.user.toString() === user._id.toString()) {
+      const updatedBlog = await Blog.findByIdAndUpdate(
+        request.params.id,
+        {
+          title: body.title,
+          url: body.url,
+          likes: body.likes || 0,
+          author: body.author,
+          user: user._id
+        },
+        {
+          new: true,
+          runValidators: true
+        }
+      )
+      response.json(updatedBlog)
+    } else {
+      response.status(401).end('Unauthorized')
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
-      blog,
-      {
-        new: true,
-        runValidators: true
-      }
-    )
-    response.json(updatedBlog)
   })
 
 module.exports = blogsRouter
