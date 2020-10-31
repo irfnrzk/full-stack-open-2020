@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -13,7 +14,9 @@ const App = () => {
     author: null,
     url: null
   })
-  // const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState('some error happened...')
+  const [showNotification, setShowNotification] = useState(false)
+  const [styleClass, setStyleClass] = useState('')
 
   useEffect(() => {
     if (user) {
@@ -49,10 +52,14 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      // setErrorMessage('Wrong credentials')
-      // setTimeout(() => {
-      //   setErrorMessage(null)
-      // }, 5000)
+      setSuccessMessage('wrong username or password')
+      setStyleClass(`error`)
+      setShowNotification(true)
+
+      // reset notification
+      setTimeout(() => {
+        setShowNotification(false)
+      }, 2000);
     }
   }
 
@@ -64,17 +71,28 @@ const App = () => {
 
   const handlePost = (event) => {
     event.preventDefault()
-    // console.log(newBlog)
     blogService
       .create(newBlog)
-      .then(blog =>
+      .then(blog => {
         setBlogs(blogs.concat(blog))
-      )
+        setSuccessMessage(`a new blog ${blog.title} by ${blog.author} added`)
+        setStyleClass(`success`)
+        setShowNotification(true)
+
+        // reset notification
+        setTimeout(() => {
+          setShowNotification(false)
+        }, 2000)
+      })
   }
 
   const loginForm = () => (
     <>
       <h1>login in to application</h1>
+      {
+        showNotification &&
+        <Notification message={successMessage} styleClass={styleClass} />
+      }
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -102,14 +120,17 @@ const App = () => {
   const blogForm = () => (
     <div>
       <h2>blogs</h2>
+      {
+        showNotification &&
+        <Notification message={successMessage} styleClass={styleClass} />
+      }
       <div>{user.name} logged in
         <button
           onClick={handleLogout}
         >logout</button>
       </div>
-      <br />
       <div>
-        <h1>create new</h1>
+        <h2>create new</h2>
         <form onSubmit={handlePost}>
           <div>
             title
