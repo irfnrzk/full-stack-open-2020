@@ -17,9 +17,11 @@ const App = () => {
 
   useEffect(() => {
     if (user) {
-      blogService.getAll().then(blogs =>
-        setBlogs(blogs)
-      )
+      blogService
+        .getAll()
+        .then(blogs =>
+          setBlogs(blogs.sort((a, b) => b.likes - a.likes))
+        )
     }
   }, [user])
 
@@ -88,8 +90,11 @@ const App = () => {
       .update({ ...blogObject, likes: blogObject.likes + 1 })
       .then(updatedBlog => {
         // update list
-        setBlogs(blogs.map(blog =>
-          blog.id !== updatedBlog.id ? blog : updatedBlog)
+        setBlogs(blogs
+          .map(blog =>
+            blog.id !== updatedBlog.id ? blog : updatedBlog
+          )
+          .sort((a, b) => b.likes - a.likes)
         )
       })
   }
