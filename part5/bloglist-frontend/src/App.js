@@ -99,6 +99,42 @@ const App = () => {
       })
   }
 
+  const deletePost = (id) => {
+    // console.log(id)
+    const title = blogs.filter(blog => blog.id === id)[0].title
+    const author = blogs.filter(blog => blog.id === id)[0].author
+    if (window.confirm(`Remove blog ${title} by ${author}?`))
+      blogService
+        .remove(id)
+        .then(updatedBlog => {
+          // update list
+          setBlogs(blogs
+            .filter(blog =>
+              blog.id !== id
+            )
+            .sort((a, b) => b.likes - a.likes)
+          )
+          setSuccessMessage(`${title} by ${author} removed`)
+          setStyleClass(`success`)
+          setShowNotification(true)
+
+          // reset notification
+          setTimeout(() => {
+            setShowNotification(false)
+          }, 2000);
+        })
+        .catch(err => {
+          setSuccessMessage(err.response.data)
+          setStyleClass(`error`)
+          setShowNotification(true)
+
+          // reset notification
+          setTimeout(() => {
+            setShowNotification(false)
+          }, 2000);
+        })
+  }
+
   const loginForm = () => (
     <>
       <h1>login in to application</h1>
@@ -153,6 +189,7 @@ const App = () => {
             key={blog.id}
             blog={blog}
             addLike={updateLikes}
+            removeBlog={deletePost}
           />
         )}
       </div>

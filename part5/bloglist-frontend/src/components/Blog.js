@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, removeBlog }) => {
   const [visible, setVisible] = useState(false)
 
   const showWhenVisible = { display: visible ? '' : 'none' }
@@ -25,6 +25,11 @@ const Blog = ({ blog, addLike }) => {
     })
   }
 
+  const deletePost = (event) => {
+    event.preventDefault()
+    removeBlog(blog.id)
+  }
+
   return (
     <div style={blogStyle}>
       <div>
@@ -43,8 +48,14 @@ const Blog = ({ blog, addLike }) => {
         <div>
           {blog.user.name}
         </div>
+        <button
+          style={{
+            display: (blog.user.username === JSON.parse(window.localStorage.getItem('loggedBloglistUser')).username) ? '' : 'none'
+          }}
+          onClick={deletePost}
+        >remove</button>
       </div>
-    </div>
+    </div >
   )
 }
 
