@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, addLike, removeBlog }) => {
+const Blog = ({ blog, addLike, removeBlog, username }) => {
   const [visible, setVisible] = useState(false)
-
-  const showWhenVisible = { display: visible ? '' : 'none' }
 
   const blogStyle = {
     paddingTop: 10,
@@ -29,7 +27,6 @@ const Blog = ({ blog, addLike, removeBlog }) => {
     event.preventDefault()
     removeBlog(blog.id)
   }
-
   return (
     <div style={blogStyle}>
       <div>
@@ -38,7 +35,7 @@ const Blog = ({ blog, addLike, removeBlog }) => {
         >{!visible ? 'view' : 'hide'}
         </button>
       </div>
-      <div style={showWhenVisible}>
+      <div className={!visible ? 'd-none' : null}>
         <div>
           {blog.url}
         </div>
@@ -50,7 +47,7 @@ const Blog = ({ blog, addLike, removeBlog }) => {
         </div>
         <button
           style={{
-            display: (blog.user.username === JSON.parse(window.localStorage.getItem('loggedBloglistUser')).username) ? '' : 'none'
+            display: (blog.user.username === username) ? '' : 'none'
           }}
           onClick={deletePost}
         >remove</button>

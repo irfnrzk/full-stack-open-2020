@@ -188,6 +188,7 @@ const App = () => {
           <Blog
             key={blog.id}
             blog={blog}
+            username={JSON.parse(window.localStorage.getItem('loggedBloglistUser')).username}
             addLike={updateLikes}
             removeBlog={deletePost}
           />
