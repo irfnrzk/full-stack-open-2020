@@ -74,3 +74,35 @@ test(`checks blog's url & likes shows when view button is clicked`, () => {
     'd-none'
   )
 })
+
+test(`ensures the event handler Blog component received as props is called twice when like button is clicked twice`, () => {
+  const blog = {
+    author: 'Michael Chan',
+    id: '5f9d2abb314d084db48decf5',
+    likes: 20,
+    title: 'React patterns',
+    url: 'https://reactpatterns.com/',
+    user: {
+      id: '5f9d02cad213823b143d5049',
+      name: 'Michael Chan',
+      username: 'Michael'
+    }
+  }
+
+  const mockHandler = jest.fn()
+
+  const component = render(
+    <Blog
+      key={blog.id}
+      blog={blog}
+      username={'Michael'}
+      addLike={mockHandler}
+    />
+  )
+
+  const likeButton = component.getByText('like')
+  fireEvent.click(likeButton)
+  fireEvent.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
