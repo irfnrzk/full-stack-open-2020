@@ -2,14 +2,19 @@ import React, { useState } from 'react'
 
 const CreateBlog = ({ createBlog }) => {
   const [newBlog, setNewBlog] = useState({
-    title: null,
-    author: null,
-    url: null
+    title: '',
+    author: '',
+    url: ''
   })
 
   const handlePost = (event) => {
     event.preventDefault()
     createBlog(newBlog)
+    setNewBlog({
+      title: '',
+      author: '',
+      url: ''
+    })
   }
 
   return (
@@ -21,14 +26,16 @@ const CreateBlog = ({ createBlog }) => {
           <input
             type="text"
             name="title"
+            value={newBlog.title}
             onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
           />
         </div>
         <div>
           author
           <input
-            type="author"
+            type="text"
             name="author"
+            value={newBlog.author}
             onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
           />
         </div>
@@ -37,6 +44,7 @@ const CreateBlog = ({ createBlog }) => {
           <input
             type="url"
             name="url"
+            value={newBlog.url}
             onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
           />
         </div>

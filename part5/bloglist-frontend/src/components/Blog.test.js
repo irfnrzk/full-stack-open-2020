@@ -4,7 +4,7 @@ import { render, fireEvent } from '@testing-library/react'
 import { prettyDOM } from '@testing-library/dom'
 import Blog from './Blog'
 
-test(`checks Blog component by default renders title & author without url & number of likes`, () => {
+test(`checks <Blog /> by default renders title & author without url & number of likes`, () => {
   const blog = {
     author: 'Michael Chan',
     id: '5f9d2abb314d084db48decf5',
@@ -75,7 +75,7 @@ test(`checks blog's url & likes shows when view button is clicked`, () => {
   )
 })
 
-test(`ensures the event handler Blog component received as props is called twice when like button is clicked twice`, () => {
+test(`ensures the event handler <Blog /> received as props is called twice when like button is clicked twice`, () => {
   const blog = {
     author: 'Michael Chan',
     id: '5f9d2abb314d084db48decf5',
@@ -89,14 +89,14 @@ test(`ensures the event handler Blog component received as props is called twice
     }
   }
 
-  const mockHandler = jest.fn()
+  const addLike = jest.fn()
 
   const component = render(
     <Blog
       key={blog.id}
       blog={blog}
       username={'Michael'}
-      addLike={mockHandler}
+      addLike={addLike}
     />
   )
 
@@ -104,5 +104,5 @@ test(`ensures the event handler Blog component received as props is called twice
   fireEvent.click(likeButton)
   fireEvent.click(likeButton)
 
-  expect(mockHandler.mock.calls).toHaveLength(2)
+  expect(addLike.mock.calls).toHaveLength(2)
 })
