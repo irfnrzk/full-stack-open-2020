@@ -83,6 +83,17 @@ const App = () => {
       })
   }
 
+  const updateLikes = (blogObject) => {
+    blogService
+      .update({ ...blogObject, likes: blogObject.likes + 1 })
+      .then(updatedBlog => {
+        // update list
+        setBlogs(blogs.map(blog =>
+          blog.id !== updatedBlog.id ? blog : updatedBlog)
+        )
+      })
+  }
+
   const loginForm = () => (
     <>
       <h1>login in to application</h1>
@@ -133,7 +144,11 @@ const App = () => {
       </Togglable>
       <div>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            addLike={updateLikes}
+          />
         )}
       </div>
     </div>

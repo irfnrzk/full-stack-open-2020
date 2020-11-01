@@ -69,28 +69,34 @@ blogsRouter
   .put('/:id', async (request, response) => {
     const body = request.body
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    const user = await User.findById(decodedToken.id)
+    await User.findById(decodedToken.id)
 
-    // find id of user who posted the blog
-    const blog = await Blog.findById(request.params.id)
-    if (blog.user.toString() === user._id.toString()) {
-      const updatedBlog = await Blog.findByIdAndUpdate(
-        request.params.id,
-        {
-          title: body.title,
-          url: body.url,
-          likes: body.likes || 0,
-          author: body.author,
-          user: user._id
-        },
-        {
-          new: true,
-          runValidators: true
-        }
-      )
-      response.json(updatedBlog)
+    await Blog.findByIdAndUpdate(
+      request.params.id,
+      {
+        title: body.title,
+        url: body.url,
+        likes: body.likes || 0,
+        author: body.author
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    )
+
+    const blog = await Blog
+      .findById(request.params.id)
+      .populate('user', {
+        username: 1,
+        name: 1,
+        id: 1
+      })
+
+    if (blog) {
+      response.json(blog)
     } else {
-      response.status(401).end('Unauthorized')
+      response.status(404).end()
     }
 
   })

@@ -24,8 +24,21 @@ const create = async newObject => {
   return response.data
 }
 
+const update = async updateObject => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const id = updateObject.id
+  delete updateObject.id
+
+  const response = await axios.put(`${baseUrl}/${id}`, updateObject, config)
+  return response.data
+}
+
 export default {
   getAll,
   setToken,
-  create
+  create,
+  update
 }
