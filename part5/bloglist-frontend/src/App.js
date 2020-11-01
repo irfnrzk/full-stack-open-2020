@@ -52,13 +52,13 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       setSuccessMessage('wrong username or password')
-      setStyleClass(`error`)
+      setStyleClass('error')
       setShowNotification(true)
 
       // reset notification
       setTimeout(() => {
         setShowNotification(false)
-      }, 2000);
+      }, 2000)
     }
   }
 
@@ -75,7 +75,7 @@ const App = () => {
       .then(blog => {
         setBlogs(blogs.concat(blog))
         setSuccessMessage(`a new blog ${blog.title} by ${blog.author} added`)
-        setStyleClass(`success`)
+        setStyleClass('success')
         setShowNotification(true)
 
         // reset notification
@@ -106,7 +106,7 @@ const App = () => {
     if (window.confirm(`Remove blog ${title} by ${author}?`))
       blogService
         .remove(id)
-        .then(updatedBlog => {
+        .then(updatedBlog => { // eslint-disable-line
           // update list
           setBlogs(blogs
             .filter(blog =>
@@ -115,23 +115,23 @@ const App = () => {
             .sort((a, b) => b.likes - a.likes)
           )
           setSuccessMessage(`${title} by ${author} removed`)
-          setStyleClass(`success`)
+          setStyleClass('success')
           setShowNotification(true)
 
           // reset notification
           setTimeout(() => {
             setShowNotification(false)
-          }, 2000);
+          }, 2000)
         })
         .catch(err => {
           setSuccessMessage(err.response.data)
-          setStyleClass(`error`)
+          setStyleClass('error')
           setShowNotification(true)
 
           // reset notification
           setTimeout(() => {
             setShowNotification(false)
-          }, 2000);
+          }, 2000)
         })
   }
 
@@ -145,7 +145,7 @@ const App = () => {
       <form onSubmit={handleLogin}>
         <div>
           username
-            <input
+          <input
             type="text"
             value={username}
             name="Username"
@@ -154,7 +154,7 @@ const App = () => {
         </div>
         <div>
           password
-            <input
+          <input
             type="password"
             value={password}
             name="Password"
