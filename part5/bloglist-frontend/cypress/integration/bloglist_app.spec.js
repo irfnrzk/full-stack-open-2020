@@ -73,12 +73,13 @@ describe('Bloglist app', function () {
       cy.get('input[name="author"]').type('Matti Luukkaine')
       cy.get('input[name="url"]').type('https://fullstackopen.com/en')
       cy.get('input[name="url"]').parent().parent().find('button').click()
-
+      cy.wait(1500)
       cy.get('button[name="openCreate"]').click()
       cy.get('input[name="title"]').type('FullStackOpen 2020')
       cy.get('input[name="author"]').type('Matti Luukkaine')
       cy.get('input[name="url"]').type('https://fullstackopen.com/en')
       cy.get('input[name="url"]').parent().parent().find('button').click()
+      cy.wait(1500)
       cy.get('.blog_list')
         .children()
         .should('have.length', 2)
@@ -138,7 +139,7 @@ describe('Bloglist app', function () {
         .should('not.exist')
     })
 
-    it.only('Checks that other users cant delete blog posted', function () {
+    it('Checks that other users cant delete blog posted', function () {
       cy.get('button[name="logout"]').click()
       const user = {
         name: 'Robert C. Martin',
@@ -151,6 +152,75 @@ describe('Bloglist app', function () {
       cy.get('button[name="deleteBlog"]')
         .children()
         .should('not.exist')
+    })
+  })
+
+  describe('Blogs are ordered by number of likes', function () {
+    beforeEach(function () {
+      cy.login({ username: 'matti', password: 'sekret' })
+      cy.addPost({
+        title: 'FullStackOpen 2019, 0 likes',
+        author: 'Matti Luukkaine',
+        url: 'https://fullstackopen.com/en'
+      })
+      cy.wait(3000)
+      cy.addPost({
+        title: 'FullStackOpen 2020, 1 likes',
+        author: 'Matti Luukkaine',
+        url: 'https://fullstackopen.com/en'
+      })
+      cy.wait(3000)
+      cy.addPost({
+        title: 'FullStackOpen 2021, 2 likes',
+        author: 'Matti Luukkaine',
+        url: 'https://fullstackopen.com/en'
+      })
+      cy.wait(3000)
+    })
+
+    it('Checks that user can like a blog', function () {
+      cy.get('.blog_list')
+        .find('.blog_content:nth-child(1)').as('first-child')
+      cy.get('.blog_list')
+        .find('.blog_content:nth-child(2)').as('middle-child')
+      cy.get('.blog_list')
+        .find('.blog_content:nth-child(3)').as('last-child')
+
+      // like FullStackOpen 2020, 1 likes
+      cy.get('@middle-child')
+        .find('button[name="toggleView"]').click()
+        .parent().next()
+        .find('button[name="likes"]').click()
+      cy.wait(1500)
+      cy.get('.blog_list')
+        .find('.blog_content:nth-child(1)')
+        .contains('FullStackOpen 2020, 1 likes')
+
+      // like FullStackOpen 2021, 2 likes
+      cy.get('@last-child')
+        .find('button[name="toggleView"]').click()
+        .parent().next()
+        .find('button[name="likes"]').then(($btn) => {
+          cy.wrap($btn).click()
+          cy.wait(1500)
+          cy.wrap($btn).click()
+          cy.wait(1500)
+        })
+
+      // check sorting
+      cy.get('.blog_list').then(($list) => {
+        cy.wrap($list)
+          .find('.blog_content:nth-child(1)')
+          .contains('FullStackOpen 2021, 2 likes')
+
+        cy.wrap($list)
+          .find('.blog_content:nth-child(2)')
+          .contains('FullStackOpen 2020, 1 likes')
+
+        cy.wrap($list)
+          .find('.blog_content:nth-child(3)')
+          .contains('FullStackOpen 2019, 0 likes')
+      })
     })
   })
 })
