@@ -31,3 +31,11 @@ Cypress.Commands.add('login', ({ username, password }) => {
     cy.visit('http://localhost:3000')
   })
 })
+
+Cypress.Commands.add('addPost', ({ title, author, url }) => {
+  cy.get('button[name="openCreate"]').click()
+  cy.get('input[name="title"]').type(title)
+  cy.get('input[name="author"]').type(author)
+  cy.get('input[name="url"]').type(url)
+  cy.get('input[name="url"]').parent().parent().find('button').click()
+})

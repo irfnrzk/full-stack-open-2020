@@ -49,7 +49,7 @@ describe('Bloglist app', function () {
     })
   })
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     beforeEach(function () {
       cy.login({ username: 'matti', password: 'sekret' })
     })
@@ -66,7 +66,7 @@ describe('Bloglist app', function () {
         .contains('FullStackOpen 2020')
     })
 
-    it.only('Two blogs are created', function () {
+    it('Two blogs are created', function () {
       cy.contains('Matti Luukkainen logged in')
       cy.get('button[name="openCreate"]').click()
       cy.get('input[name="title"]').type('FullStackOpen 2019')
@@ -95,6 +95,38 @@ describe('Bloglist app', function () {
 
       cy.get('@last-child')
         .contains('https://fullstackopen.com/en')
+    })
+  })
+
+  describe.only('For each post', function () {
+    beforeEach(function () {
+      cy.login({ username: 'matti', password: 'sekret' })
+      cy.addPost({
+        title: 'FullStackOpen 2020',
+        author: 'Matti Luukkaine',
+        url: 'https://fullstackopen.com/en'
+      })
+    })
+
+    it('Checks that user can like a blog', function () {
+      let likes = 0;
+      cy.get('button[name="toggleView"]').click()
+      cy.get('.blog_content').contains('likes 0')
+      cy.get('button[name="likes"]').click()
+      likes++
+      cy.get('.blog_content').contains(`likes ${likes}`)
+    })
+
+    it('Checks that user can like a blog multiple times', function () {
+      let likes = 0;
+      cy.get('button[name="toggleView"]').click()
+      cy.get('.blog_content').contains('likes 0')
+      for (let n = 0; n < 3; n++) {
+        cy.get('button[name="likes"]').click()
+        cy.wait(1000)
+        likes++
+      }
+      cy.get('.blog_content').contains(`likes ${likes}`)
     })
   })
 })
