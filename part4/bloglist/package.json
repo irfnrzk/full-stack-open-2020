@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "deploy": "git push heroku master",
     "logs:prod": "heroku logs --tail",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "start:test": "cross-env NODE_ENV=test node index.js"
   },
   "author": "irfan.abrazak@gmail.com",
   "license": "ISC",
