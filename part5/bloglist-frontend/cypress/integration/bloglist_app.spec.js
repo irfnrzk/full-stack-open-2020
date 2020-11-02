@@ -48,4 +48,54 @@ describe('Bloglist app', function () {
         .and('have.css', 'color', 'rgb(255, 0, 0)')
     })
   })
+
+  describe.only('When logged in', function () {
+    beforeEach(function () {
+      cy.login({ username: 'matti', password: 'sekret' })
+    })
+
+    it('A blog can be created', function () {
+      cy.contains('Matti Luukkainen logged in')
+      cy.get('button[name="openCreate"]').click()
+      cy.get('input[name="title"]').type('FullStackOpen 2020')
+      cy.get('input[name="author"]').type('Matti Luukkaine')
+      cy.get('input[name="url"]').type('https://fullstackopen.com/en')
+      cy.get('input[name="url"]').parent().parent().find('button').click()
+      cy.get('.blog_content')
+        .should('have.length', 1)
+        .contains('FullStackOpen 2020')
+    })
+
+    it.only('Two blogs are created', function () {
+      cy.contains('Matti Luukkainen logged in')
+      cy.get('button[name="openCreate"]').click()
+      cy.get('input[name="title"]').type('FullStackOpen 2019')
+      cy.get('input[name="author"]').type('Matti Luukkaine')
+      cy.get('input[name="url"]').type('https://fullstackopen.com/en')
+      cy.get('input[name="url"]').parent().parent().find('button').click()
+
+      cy.get('button[name="openCreate"]').click()
+      cy.get('input[name="title"]').type('FullStackOpen 2020')
+      cy.get('input[name="author"]').type('Matti Luukkaine')
+      cy.get('input[name="url"]').type('https://fullstackopen.com/en')
+      cy.get('input[name="url"]').parent().parent().find('button').click()
+      cy.get('.blog_list')
+        .children()
+        .should('have.length', 2)
+
+      cy.get('.blog_list')
+        .find('.blog_content:first-child')
+        .contains('FullStackOpen 2019')
+
+      cy.get('.blog_list')
+        .find('.blog_content:last-child').as('last-child')
+        .contains('FullStackOpen 2020')
+        .contains('Matti Luukkaine')
+        .find('button[name="toggleView"]').click()
+
+      cy.get('@last-child')
+        .contains('https://fullstackopen.com/en')
+    })
+  })
 })
+
