@@ -18,21 +18,34 @@ describe('Bloglist app', function () {
     cy.contains('login').click()
   })
 
-  it('user can login', function () {
-    cy.contains('login').click()
-    cy.get('input[name="username"]').type('matti')
-    cy.get('input[name="password"]').type('sekret')
-    cy.get('button').click()
+  describe('Login', function () {
+    it('succeeds with correct credentials', function () {
+      cy.contains('login').click()
+      cy.get('input[name="username"]').type('matti')
+      cy.get('input[name="password"]').type('sekret')
+      cy.get('button').click()
 
-    cy.contains('Matti Luukkainen logged in')
-  })
+      cy.contains('Matti Luukkainen logged in')
+    })
 
-  it('login fails with wrong password', function () {
-    cy.contains('login').click()
-    cy.get('input[name="username"]').type('mluukkai')
-    cy.get('input[name="password"]').type('wrong')
-    cy.get('button').click()
+    it('fails with wrong credentials', function () {
+      cy.contains('login').click()
+      cy.get('input[name="username"]').type('mluukkai')
+      cy.get('input[name="password"]').type('wrong')
+      cy.get('button').click()
 
-    cy.get('.error').contains('wrong username or password')
+      cy.get('.error').contains('wrong username or password')
+    })
+
+    it('notification shown with unsuccessful login is displayed red', function () {
+      cy.contains('login').click()
+      cy.get('input[name="username"]').type('mluukkai')
+      cy.get('input[name="password"]').type('wrong')
+      cy.get('button').click()
+
+      cy.get('.error')
+        .contains('wrong username or password')
+        .and('have.css', 'color', 'rgb(255, 0, 0)')
+    })
   })
 })
