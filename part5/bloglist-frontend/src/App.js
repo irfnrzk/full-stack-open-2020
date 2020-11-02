@@ -177,6 +177,7 @@ const App = () => {
       }
       <div>{user.name} logged in
         <button
+          name='logout'
           onClick={handleLogout}
         >logout</button>
       </div>

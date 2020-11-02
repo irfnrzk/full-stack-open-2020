@@ -49,6 +49,7 @@ const Blog = ({ blog, addLike, removeBlog, username }) => {
           style={{
             display: (blog.user.username === username) ? '' : 'none'
           }}
+          name='deleteBlog'
           onClick={deletePost}
         >remove</button>
       </div>

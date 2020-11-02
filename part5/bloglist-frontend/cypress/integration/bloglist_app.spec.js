@@ -98,7 +98,7 @@ describe('Bloglist app', function () {
     })
   })
 
-  describe.only('For each post', function () {
+  describe('For each post', function () {
     beforeEach(function () {
       cy.login({ username: 'matti', password: 'sekret' })
       cy.addPost({
@@ -106,6 +106,7 @@ describe('Bloglist app', function () {
         author: 'Matti Luukkaine',
         url: 'https://fullstackopen.com/en'
       })
+      cy.wait(3000)
     })
 
     it('Checks that user can like a blog', function () {
@@ -127,6 +128,29 @@ describe('Bloglist app', function () {
         likes++
       }
       cy.get('.blog_content').contains(`likes ${likes}`)
+    })
+
+    it('Checks that user can delete blog posted', function () {
+      cy.get('button[name="toggleView"]').click()
+      cy.get('button[name="deleteBlog"]').click()
+      cy.get('.blog_list')
+        .children()
+        .should('not.exist')
+    })
+
+    it.only('Checks that other users cant delete blog posted', function () {
+      cy.get('button[name="logout"]').click()
+      const user = {
+        name: 'Robert C. Martin',
+        username: 'Robert',
+        password: 'sekret'
+      }
+      cy.request('POST', 'http://localhost:3001/api/users/', user)
+      cy.login({ username: 'Robert', password: 'sekret' })
+      cy.get('button[name="toggleView"]').click()
+      cy.get('button[name="deleteBlog"]')
+        .children()
+        .should('not.exist')
     })
   })
 })
