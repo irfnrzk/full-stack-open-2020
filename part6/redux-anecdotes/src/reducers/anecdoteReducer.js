@@ -64,10 +64,12 @@ export const addVote = (id) => {
 }
 
 export const createNote = (anecdote) => {
-  console.log({ data: anecdote })
-  return {
-    type: 'ADD_ANECDOTE',
-    data: anecdote
+  return async dispatch => {
+    const newAnecdote = await anecdoteService.create(asObject(anecdote))
+    dispatch({
+      type: 'ADD_ANECDOTE',
+      data: newAnecdote
+    })
   }
 }
 
