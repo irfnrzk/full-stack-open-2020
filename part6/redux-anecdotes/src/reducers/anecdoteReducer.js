@@ -66,7 +66,7 @@ export const addVote = (updateAnecdote) => {
   }
 }
 
-export const createNote = (anecdote) => {
+export const createAnecdote = (anecdote) => {
   return async dispatch => {
     const newAnecdote = await anecdoteService.create(asObject(anecdote))
     dispatch({
