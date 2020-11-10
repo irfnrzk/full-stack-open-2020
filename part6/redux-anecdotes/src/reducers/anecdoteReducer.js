@@ -8,7 +8,6 @@ const anecdotesAtStart = [
 ]
 
 const getId = () => (100000 * Math.random()).toFixed(0)
-
 const asObject = (anecdote) => {
   return {
     content: anecdote,
@@ -41,7 +40,12 @@ const anecdoteReducer = (state = initialState, action) => {
     case 'ADD_ANECDOTE':
       const content = action.data
       const updatedList = [...state, content]
+      console.log(updatedList.sort((a, b) => b.votes - a.votes)
+      )
       return updatedList.sort((a, b) => b.votes - a.votes)
+
+    case 'INIT_ANECDOTES':
+      return action.data
 
     default:
       return state.sort((a, b) => b.votes - a.votes)
@@ -58,9 +62,17 @@ export const addVote = (id) => {
 }
 
 export const createNote = (anecdote) => {
+  console.log({ data: anecdote })
   return {
     type: 'ADD_ANECDOTE',
-    data: asObject(anecdote)
+    data: anecdote
+  }
+}
+
+export const initializeAnecdotes = (anecdotes) => {
+  return {
+    type: 'INIT_ANECDOTES',
+    data: anecdotes,
   }
 }
 
