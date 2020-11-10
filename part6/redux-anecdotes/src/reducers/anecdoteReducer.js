@@ -47,19 +47,22 @@ const anecdoteReducer = (state = initialState, action) => {
       return updatedList.sort((a, b) => b.votes - a.votes)
 
     case 'INIT_ANECDOTES':
-      return action.data
+      return action.data.sort((a, b) => b.votes - a.votes)
 
     default:
       return state.sort((a, b) => b.votes - a.votes)
   }
 }
 
-export const addVote = (id) => {
-  return {
-    type: 'ADD_VOTE',
-    data: {
-      id: id
-    }
+export const addVote = (updateAnecdote) => {
+  return async dispatch => {
+    await anecdoteService.update(updateAnecdote)
+    dispatch({
+      type: 'ADD_VOTE',
+      data: {
+        id: updateAnecdote.id
+      }
+    })
   }
 }
 
