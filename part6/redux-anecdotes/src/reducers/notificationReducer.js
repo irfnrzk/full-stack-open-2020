@@ -14,7 +14,6 @@ const notificationReducer = (state = initialState, action) => {
     case 'SET_NOTIFICATION':
       const newState = {
         id: action.data.id,
-        content_id: action.data.content_id,
         content: action.data.content
       }
       return [...state, newState]
@@ -31,17 +30,22 @@ export const hideNotification = () => {
 }
 
 let count = 0;
-
-export const setNotification = (id, anecdote) => {
+export const setNotification = (anecdote, time) => {
   const _id = count
   count++
-  return {
-    type: 'SET_NOTIFICATION',
-    data: {
-      id: _id,
-      content_id: id,
-      content: anecdote
-    }
+  return async dispatch => {
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      data: {
+        id: _id,
+        content: anecdote
+      }
+    })
+    setTimeout(() => {
+      dispatch({
+        type: 'HIDE_NOTIFICATION'
+      })
+    }, time)
   }
 }
 
