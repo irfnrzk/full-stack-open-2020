@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  Switch, Route, Link, useRouteMatch
+  Switch, Route, Link, useRouteMatch, useHistory
 } from "react-router-dom"
 
 const Menu = () => {
@@ -120,9 +120,15 @@ const App = () => {
 
   const [notification, setNotification] = useState('')
 
+  const history = useHistory()
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+    setTimeout(() => {
+      setNotification('')
+    }, 3000);
+    history.push('/')
   }
 
   const anecdoteById = (id) =>
@@ -148,6 +154,11 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {
+        notification !== '' ?
+          <div>{notification}</div>
+          : null
+      }
       <Switch>
         <Route path="/create">
           <CreateNew addNew={addNew} />
