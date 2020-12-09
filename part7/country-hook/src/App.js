@@ -18,13 +18,43 @@ const useField = (type) => {
 const useCountry = (name) => {
   const [country, setCountry] = useState(null)
 
-  useEffect()
+  useEffect(() => {
+
+    const fetchCountry = () => {
+      const cancelToken = axios.CancelToken.source()
+      if (name !== '') {
+        axios
+          .get(
+            `https://restcountries.eu/rest/v2/name/${name}`,
+            { cancelToken: cancelToken.token }
+          )
+          .then(res => {
+            setCountry({
+              found: true,
+              data: res.data[0]
+            })
+            return country
+          })
+          .catch(err => {
+            console.log(err)
+            setCountry({
+              found: false
+            })
+          })
+
+        return () => {
+          cancelToken.cancel()
+        }
+      }
+    }
+    fetchCountry()
+  }, [name]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return country
 }
 
 const Country = ({ country }) => {
-  if (!country) {
+  if (country === null) {
     return null
   }
 
@@ -40,8 +70,8 @@ const Country = ({ country }) => {
     <div>
       <h3>{country.data.name} </h3>
       <div>capital {country.data.capital} </div>
-      <div>population {country.data.population}</div> 
-      <img src={country.data.flag} height='100' alt={`flag of ${country.data.name}`}/>  
+      <div>population {country.data.population}</div>
+      <img src={country.data.flag} height='100' alt={`flag of ${country.data.name}`} />
     </div>
   )
 }
