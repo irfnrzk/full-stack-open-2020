@@ -5,6 +5,8 @@ import Notification from './components/Notification'
 import Togglable from './components/Toggleable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { useSelector, useDispatch } from 'react-redux'
+import { hideNotification, setNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,7 +14,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [successMessage, setSuccessMessage] = useState('some error happened...')
-  const [showNotification, setShowNotification] = useState(false)
+  // const [showNotification, setShowNotification] = useState(false)
+  const dispatch = useDispatch()
+  const notification = useSelector(state => state)
+  // console.log(notification)
   const [styleClass, setStyleClass] = useState('')
 
   useEffect(() => {
@@ -53,11 +58,13 @@ const App = () => {
     } catch (exception) {
       setSuccessMessage('wrong username or password')
       setStyleClass('error')
-      setShowNotification(true)
+      // setShowNotification(true)
+      dispatch(setNotification())
 
       // reset notification
       setTimeout(() => {
-        setShowNotification(false)
+        // setShowNotification(false)
+        dispatch(hideNotification())
       }, 2000)
     }
   }
@@ -76,11 +83,13 @@ const App = () => {
         setBlogs(blogs.concat(blog))
         setSuccessMessage(`a new blog ${blog.title} by ${blog.author} added`)
         setStyleClass('success')
-        setShowNotification(true)
+        // setShowNotification(true)
+        dispatch(setNotification())
 
         // reset notification
         setTimeout(() => {
-          setShowNotification(false)
+          // setShowNotification(false)
+          dispatch(hideNotification())
         }, 2000)
       })
   }
@@ -116,21 +125,25 @@ const App = () => {
           )
           setSuccessMessage(`${title} by ${author} removed`)
           setStyleClass('success')
-          setShowNotification(true)
+          // setShowNotification(true)
+          dispatch(setNotification())
 
           // reset notification
           setTimeout(() => {
-            setShowNotification(false)
+            // setShowNotification(false)
+            dispatch(hideNotification())
           }, 2000)
         })
         .catch(err => {
           setSuccessMessage(err.response.data)
           setStyleClass('error')
-          setShowNotification(true)
+          // setShowNotification(true)
+          dispatch(setNotification())
 
           // reset notification
           setTimeout(() => {
-            setShowNotification(false)
+            // setShowNotification(false)
+            dispatch(hideNotification())
           }, 2000)
         })
   }
@@ -139,7 +152,7 @@ const App = () => {
     <>
       <h1>login in to application</h1>
       {
-        showNotification &&
+        notification &&
         <Notification message={successMessage} styleClass={styleClass} />
       }
       <form onSubmit={handleLogin}>
@@ -172,7 +185,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {
-        showNotification &&
+        notification &&
         <Notification message={successMessage} styleClass={styleClass} />
       }
       <div>{user.name} logged in
