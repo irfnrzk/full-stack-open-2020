@@ -34,14 +34,11 @@ export const initializeBlog = () => {
 export const createBlog = (post) => {
   return async dispatch => {
     const blog = await blogService.create(post)
+    dispatch(initializeBlog())
     dispatch(setNotification(`a new blog ${blog.title} by ${blog.author} added`, 'success'))
     setTimeout(() => {
       dispatch(hideNotification())
     }, 2000)
-    dispatch({
-      type: 'ADD_BLOG',
-      data: blog
-    })
   }
 }
 

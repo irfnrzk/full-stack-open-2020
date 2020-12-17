@@ -3,20 +3,16 @@ import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Toggleable'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import { useSelector, useDispatch } from 'react-redux'
-import { hideNotification, setNotification } from './reducers/notificationReducer'
 import { initializeBlog } from './reducers/blogReducer'
+import { login, logout, initializeUser } from './reducers/userReducer'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [successMessage, setSuccessMessage] = useState('some error happened...')
+  const user = useSelector(state => state.user)
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
-  const [styleClass, setStyleClass] = useState('')
 
   useEffect(() => {
     if (user) {
@@ -25,82 +21,20 @@ const App = () => {
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps  
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+    dispatch(initializeUser())
+  }, [dispatch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
-
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
-      window.localStorage.setItem(
-        'loggedBloglistUser', JSON.stringify(user)
-      )
-      console.log(user)
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
-      setSuccessMessage('wrong username or password')
-      setStyleClass('error')
-      dispatch(setNotification())
-
-      // reset notification
-      setTimeout(() => {
-        dispatch(hideNotification())
-      }, 2000)
-    }
+    dispatch(login(username, password))
+    setUsername('')
+    setPassword('')
   }
 
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBloglistUser')
-    setUser(null)
-  }
-
-  const deletePost = (id) => {
-    // console.log(id)
-    const title = blogs.filter(blog => blog.id === id)[0].title
-    const author = blogs.filter(blog => blog.id === id)[0].author
-    if (window.confirm(`Remove blog ${title} by ${author}?`))
-      blogService
-        .remove(id)
-        .then(updatedBlog => { // eslint-disable-line
-          // update list
-          // setBlogs(blogs
-          //   .filter(blog =>
-          //     blog.id !== id
-          //   )
-          //   .sort((a, b) => b.likes - a.likes)
-          // )
-          setSuccessMessage(`${title} by ${author} removed`)
-          setStyleClass('success')
-          dispatch(setNotification())
-
-          // reset notification
-          setTimeout(() => {
-            dispatch(hideNotification())
-          }, 2000)
-        })
-        .catch(err => {
-          setSuccessMessage(err.response.data)
-          setStyleClass('error')
-          dispatch(setNotification())
-
-          // reset notification
-          setTimeout(() => {
-            dispatch(hideNotification())
-          }, 2000)
-        })
+    dispatch(logout())
   }
 
   const loginForm = () => (
