@@ -23,7 +23,6 @@ const blogReducer = (state = initialState, action) => {
 export const initializeBlog = () => {
   return async dispatch => {
     const blogs = await blogService.getAll()
-    console.log(blogs)
     dispatch({
       type: 'INIT_BLOG',
       data: blogs
@@ -52,12 +51,42 @@ export const addLike = (post) => {
 export const deleteBlog = (id, title, author) => {
   return async dispatch => {
     await blogService.remove(id)
+    dispatch(redirect())
     dispatch(setNotification(`${title} by ${author} removed`, 'success'))
     setTimeout(() => {
       dispatch(hideNotification())
+      dispatch(resetRedirect())
     }, 2000)
     dispatch(initializeBlog())
   }
 }
 
-export default blogReducer
+const blogRedirectReducer = (state = false, action) => {
+  switch (action.type) {
+    case 'REDIRECT':
+      return true
+
+    case 'RESET_REDIRECT':
+      return false
+
+    default:
+      return state
+  }
+}
+
+export const redirect = () => {
+  return {
+    type: 'REDIRECT'
+  }
+}
+
+export const resetRedirect = () => {
+  return {
+    type: 'RESET_REDIRECT'
+  }
+}
+
+export {
+  blogReducer,
+  blogRedirectReducer
+}

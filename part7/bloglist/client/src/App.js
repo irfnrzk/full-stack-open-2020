@@ -1,21 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
+import {
+  Switch, Route, Link, useParams, Redirect
+} from "react-router-dom"
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Toggleable'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlog } from './reducers/blogReducer'
-import { login, logout, initializeUser } from './reducers/userReducer'
+import { logout, initializeUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
-import users from './services/users'
+import Login from './components/Login'
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const user = useSelector(state => state.user)
   const users = useSelector(state => state.users)
-  const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (user) {
@@ -28,78 +29,71 @@ const App = () => {
     dispatch(initializeUser())
   }, [dispatch])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    dispatch(login(username, password))
-    setUsername('')
-    setPassword('')
-  }
-
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBloglistUser')
     dispatch(logout())
   }
 
-  const loginForm = () => (
-    <>
-      <h1>login in to application</h1>
-      <Notification />
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </>
-  )
-
   const blogFormRef = useRef()
 
-  const blogForm = () => (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
-      <div>{user.name} logged in
-        <button
-          name='logout'
-          onClick={handleLogout}
-        >logout</button>
-      </div>
-      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <CreateBlog />
-      </Togglable>
-      <div className='blog_list'>
-        {blogs.map(blog =>
-          <Blog
-            key={blog.id}
-            blog={blog}
-            username={JSON.parse(window.localStorage.getItem('loggedBloglistUser')).username}
-          />
-        )}
-      </div>
-      {
-        userForm()
-      }
-    </div>
-  )
+  const BlogForm = ({ blogs }) => {
 
-  const userForm = () => (
+    const blogStyle = {
+      paddingTop: 10,
+      paddingLeft: 2,
+      border: 'solid',
+      borderWidth: 1,
+      marginBottom: 5
+    }
+
+    if (!user) {
+      return null
+    }
+
+    return (
+      <div>
+        <h2>blogs</h2>
+        <Notification />
+        <div>{user.name} logged in
+        <button
+            name='logout'
+            onClick={handleLogout}
+          >logout</button>
+        </div>
+        <Switch>
+          <Route path="/users/:id">
+            <UserBlog users={users} />
+          </Route>
+          <Route path="/users">
+            <Users />
+          </Route>
+          <Route path="/blogs/:id">
+            <Blog
+              blogs={blogs}
+              username={JSON.parse(window.localStorage.getItem('loggedBloglistUser')).username}
+            />
+          </Route>
+          <Route path="/blogs">
+            <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+              <CreateBlog />
+            </Togglable>
+            <div className='blog_list'>
+              {blogs.map(blog =>
+                <div key={blog.id} className='blog_content' style={blogStyle}>
+                  <div>
+                    <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Route>
+        </Switch>
+      </div>
+    )
+  }
+
+  const Users = () => (
     <div>
       <h2>Users</h2>
       <table>
@@ -109,24 +103,69 @@ const App = () => {
             <th>blogs created</th>
           </tr>
         </thead>
-        {
-          users.map(el => (
-            <tr>
-              <td>{el.name ? el.name : el.username}</td>
-              <td>{el.blogs.length}</td>
-            </tr>
-          ))
-        }
+        <tbody>
+          {
+            users.map(el => (
+              <tr key={el.id}>
+                <td><Link to={`/users/${el.id}`}>{el.name ? el.name : el.username}</Link></td>
+                <td>{el.blogs.length}</td>
+              </tr>
+            ))
+          }
+        </tbody>
       </table>
     </div>
   )
 
+  const UserBlog = ({ users }) => {
+    const id = useParams().id
+    const user = users.find(n => n.id === id)
+    if (!user) {
+      return null
+    }
+
+    const Content = ({ user }) => {
+      return (
+        <div>
+          <h3>added blogs</h3>
+          <ul>
+            {
+              user.blogs.map(user => (
+                <li key={user.id}>{user.title}</li>
+              ))
+            }
+          </ul>
+        </div>
+      )
+    }
+
+    return (
+      <div>
+        <h2>{user.name ? user.name : user.username}</h2>
+        {
+          user.blogs.length === 0 ? <div>No entries</div> :
+            <Content user={user} />
+        }
+      </div>
+    )
+  }
+
   return (
     <div>
-      {user === null ?
-        loginForm() :
-        blogForm()
-      }
+      <Switch>
+        <Route path="/users">
+          {!localStorage.getItem('loggedBloglistUser') ? <Redirect to="/login" /> : <BlogForm blogs={blogs} />}
+        </Route>
+        <Route path="/blogs">
+          {!localStorage.getItem('loggedBloglistUser') ? <Redirect to="/login" /> : <BlogForm blogs={blogs} />}
+        </Route>
+        <Route path="/login">
+          {localStorage.getItem('loggedBloglistUser') ? <Redirect to="/" /> : <Login />}
+        </Route>
+        <Route path="/">
+          {!localStorage.getItem('loggedBloglistUser') ? <Redirect to="/login" /> : <Redirect to="/blogs" />}
+        </Route>
+      </Switch>
     </div>
   )
 }

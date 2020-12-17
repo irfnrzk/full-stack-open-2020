@@ -1,5 +1,4 @@
-import userService from "../services/users"
-import { hideNotification, setNotification } from "./notificationReducer"
+import userService from '../services/users'
 
 const initialState = []
 
@@ -18,7 +17,6 @@ const usersReducer = (state = initialState, action) => {
 export const initializeUsers = () => {
   return async dispatch => {
     const users = await userService.getAll()
-    console.log(users)
     dispatch({
       type: 'INIT_USERS',
       data: users

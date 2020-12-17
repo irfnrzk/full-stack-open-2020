@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React from 'react'
+import {
+  useParams, Redirect
+} from "react-router-dom"
+import { useSelector, useDispatch } from 'react-redux'
 import { addLike, deleteBlog } from '../reducers/blogReducer'
 
-const Blog = ({ blog, username }) => {
+const Blog = ({ blogs, username }) => {
   const dispatch = useDispatch()
-  const [visible, setVisible] = useState(false)
+  const redirectToBlog = useSelector(state => state.redirectToBlog)
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
+  const id = useParams().id
+  const blog = blogs.find(n => n.id === id)
+  if (!blog) {
+    return null
   }
 
   const updateLikes = (event) => {
@@ -33,24 +34,20 @@ const Blog = ({ blog, username }) => {
     }
   }
 
+  if (redirectToBlog) {
+    return <Redirect to="/blogs" />;
+  }
+
   return (
-    <div className='blog_content' style={blogStyle}>
+    <div>
+      <h2>{blog.title}</h2>
       <div>
-        {blog.title} {blog.author} <button name='toggleView'
-          onClick={() => { setVisible(!visible) }}
-        >{!visible ? 'view' : 'hide'}
-        </button>
-      </div>
-      <div className={!visible ? 'd-none' : null}>
+        <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a>
         <div>
-          {blog.url}
+          {blog.likes} likes
+          <button name='likes' onClick={updateLikes}>like</button>
         </div>
-        <div>
-          likes {blog.likes} <button name='likes' onClick={updateLikes}>like</button>
-        </div>
-        <div>
-          {blog.user.name}
-        </div>
+        <div>added by {blog.author}</div>
         <button
           style={{
             display: (blog.user.username === username) ? '' : 'none'
@@ -59,7 +56,7 @@ const Blog = ({ blog, username }) => {
           onClick={deletePost}
         >remove</button>
       </div>
-    </div >
+    </div>
   )
 }
 
