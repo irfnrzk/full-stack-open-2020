@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../reducers/blogReducer'
 
-const CreateBlog = ({ createBlog }) => {
+const CreateBlog = () => {
+  const dispatch = useDispatch()
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
@@ -9,7 +12,7 @@ const CreateBlog = ({ createBlog }) => {
 
   const handlePost = (event) => {
     event.preventDefault()
-    createBlog(newBlog)
+    dispatch(createBlog(newBlog))
     setNewBlog({
       title: '',
       author: '',

@@ -7,28 +7,22 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import { useSelector, useDispatch } from 'react-redux'
 import { hideNotification, setNotification } from './reducers/notificationReducer'
+import { initializeBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [successMessage, setSuccessMessage] = useState('some error happened...')
-  // const [showNotification, setShowNotification] = useState(false)
   const dispatch = useDispatch()
-  const notification = useSelector(state => state)
-  // console.log(notification)
+  const blogs = useSelector(state => state.blogs)
   const [styleClass, setStyleClass] = useState('')
 
   useEffect(() => {
     if (user) {
-      blogService
-        .getAll()
-        .then(blogs =>
-          setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-        )
+      dispatch(initializeBlog())
     }
-  }, [user])
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps  
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -58,12 +52,10 @@ const App = () => {
     } catch (exception) {
       setSuccessMessage('wrong username or password')
       setStyleClass('error')
-      // setShowNotification(true)
       dispatch(setNotification())
 
       // reset notification
       setTimeout(() => {
-        // setShowNotification(false)
         dispatch(hideNotification())
       }, 2000)
     }
@@ -75,36 +67,17 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    blogService
-      .create(blogObject)
-      .then(blog => {
-        setBlogs(blogs.concat(blog))
-        setSuccessMessage(`a new blog ${blog.title} by ${blog.author} added`)
-        setStyleClass('success')
-        // setShowNotification(true)
-        dispatch(setNotification())
-
-        // reset notification
-        setTimeout(() => {
-          // setShowNotification(false)
-          dispatch(hideNotification())
-        }, 2000)
-      })
-  }
-
   const updateLikes = (blogObject) => {
     blogService
       .update({ ...blogObject, likes: blogObject.likes + 1 })
       .then(updatedBlog => {
         // update list
-        setBlogs(blogs
-          .map(blog =>
-            blog.id !== updatedBlog.id ? blog : updatedBlog
-          )
-          .sort((a, b) => b.likes - a.likes)
-        )
+        // setBlogs(blogs
+        //   .map(blog =>
+        //     blog.id !== updatedBlog.id ? blog : updatedBlog
+        //   )
+        //   .sort((a, b) => b.likes - a.likes)
+        // )
       })
   }
 
@@ -117,32 +90,28 @@ const App = () => {
         .remove(id)
         .then(updatedBlog => { // eslint-disable-line
           // update list
-          setBlogs(blogs
-            .filter(blog =>
-              blog.id !== id
-            )
-            .sort((a, b) => b.likes - a.likes)
-          )
+          // setBlogs(blogs
+          //   .filter(blog =>
+          //     blog.id !== id
+          //   )
+          //   .sort((a, b) => b.likes - a.likes)
+          // )
           setSuccessMessage(`${title} by ${author} removed`)
           setStyleClass('success')
-          // setShowNotification(true)
           dispatch(setNotification())
 
           // reset notification
           setTimeout(() => {
-            // setShowNotification(false)
             dispatch(hideNotification())
           }, 2000)
         })
         .catch(err => {
           setSuccessMessage(err.response.data)
           setStyleClass('error')
-          // setShowNotification(true)
           dispatch(setNotification())
 
           // reset notification
           setTimeout(() => {
-            // setShowNotification(false)
             dispatch(hideNotification())
           }, 2000)
         })
@@ -151,10 +120,7 @@ const App = () => {
   const loginForm = () => (
     <>
       <h1>login in to application</h1>
-      {
-        notification &&
-        <Notification message={successMessage} styleClass={styleClass} />
-      }
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -184,10 +150,7 @@ const App = () => {
   const blogForm = () => (
     <div>
       <h2>blogs</h2>
-      {
-        notification &&
-        <Notification message={successMessage} styleClass={styleClass} />
-      }
+      <Notification />
       <div>{user.name} logged in
         <button
           name='logout'
@@ -195,7 +158,7 @@ const App = () => {
         >logout</button>
       </div>
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <CreateBlog createBlog={addBlog} />
+        <CreateBlog />
       </Togglable>
       <div className='blog_list'>
         {blogs.map(blog =>

@@ -1,13 +1,17 @@
-const initialState = false
+const initialState = {
+  visibility: false,
+  message: '',
+  style: ''
+}
 
 const notificationReducer = (state = initialState, action) => {
 
   switch (action.type) {
     case 'HIDE_NOTIFICATION':
-      return false
+      return { ...state, visibility: false, message: action.data.message, style: action.data.style }
 
     case 'SET_NOTIFICATION':
-      return true
+      return { ...state, visibility: true, message: action.data.message, style: action.data.style }
 
     default:
       return state
@@ -17,13 +21,21 @@ const notificationReducer = (state = initialState, action) => {
 
 export const hideNotification = () => {
   return {
-    type: 'HIDE_NOTIFICATION'
+    type: 'HIDE_NOTIFICATION',
+    data: {
+      message: '',
+      style: ''
+    }
   }
 }
 
-export const setNotification = () => {
+export const setNotification = (message, style) => {
   return {
-    type: 'SET_NOTIFICATION'
+    type: 'SET_NOTIFICATION',
+    data: {
+      message: message,
+      style: style
+    }
   }
 }
 
