@@ -6,17 +6,21 @@ import Togglable from './components/Toggleable'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlog } from './reducers/blogReducer'
 import { login, logout, initializeUser } from './reducers/userReducer'
+import { initializeUsers } from './reducers/usersReducer'
+import users from './services/users'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const user = useSelector(state => state.user)
+  const users = useSelector(state => state.users)
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
 
   useEffect(() => {
     if (user) {
       dispatch(initializeBlog())
+      dispatch(initializeUsers())
     }
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps  
 
@@ -89,6 +93,31 @@ const App = () => {
           />
         )}
       </div>
+      {
+        userForm()
+      }
+    </div>
+  )
+
+  const userForm = () => (
+    <div>
+      <h2>Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>blogs created</th>
+          </tr>
+        </thead>
+        {
+          users.map(el => (
+            <tr>
+              <td>{el.name ? el.name : el.username}</td>
+              <td>{el.blogs.length}</td>
+            </tr>
+          ))
+        }
+      </table>
     </div>
   )
 

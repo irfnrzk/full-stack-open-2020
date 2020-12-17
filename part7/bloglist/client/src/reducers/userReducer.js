@@ -13,11 +13,6 @@ const userReducer = (state = initialState, action) => {
     case 'REMOVE_USER':
       return null
 
-    case 'ADD_BLOG':
-      const newBlog = action.data
-      const updatedBlogList = [...state, newBlog]
-      return updatedBlogList
-
     default:
       return state
   }
