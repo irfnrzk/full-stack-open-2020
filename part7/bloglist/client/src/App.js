@@ -67,20 +67,6 @@ const App = () => {
     setUser(null)
   }
 
-  const updateLikes = (blogObject) => {
-    blogService
-      .update({ ...blogObject, likes: blogObject.likes + 1 })
-      .then(updatedBlog => {
-        // update list
-        // setBlogs(blogs
-        //   .map(blog =>
-        //     blog.id !== updatedBlog.id ? blog : updatedBlog
-        //   )
-        //   .sort((a, b) => b.likes - a.likes)
-        // )
-      })
-  }
-
   const deletePost = (id) => {
     // console.log(id)
     const title = blogs.filter(blog => blog.id === id)[0].title
@@ -166,8 +152,6 @@ const App = () => {
             key={blog.id}
             blog={blog}
             username={JSON.parse(window.localStorage.getItem('loggedBloglistUser')).username}
-            addLike={updateLikes}
-            removeBlog={deletePost}
           />
         )}
       </div>
