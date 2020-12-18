@@ -4,6 +4,7 @@ import {
 } from "react-router-dom"
 import { useSelector, useDispatch } from 'react-redux'
 import { addLike, deleteBlog } from '../reducers/blogReducer'
+import Comment from './Comment'
 
 const Blog = ({ blogs, username }) => {
   const dispatch = useDispatch()
@@ -55,6 +56,8 @@ const Blog = ({ blogs, username }) => {
           name='deleteBlog'
           onClick={deletePost}
         >remove</button>
+        <h3>comments</h3>
+        <Comment blog={blog} />
       </div>
     </div>
   )

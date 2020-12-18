@@ -1,5 +1,5 @@
 const blogsRouter = require('express').Router()
-const Blog = require('../models/blog')
+const { Blog, Comment } = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
@@ -73,6 +73,38 @@ blogsRouter
 
     if (result) {
       response.json(result)
+    }
+  })
+
+  .post('/:id/comments', async (request, response) => {
+    const body = request.body
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    await User.findById(decodedToken.id)
+
+    const result = await Blog.findById(request.params.id)
+    const comment = new Comment({ body: body.comment })
+    result.comments.push(comment)
+    await result.save()
+
+    if (result) {
+      response.json(result)
+    }
+  })
+
+  .delete('/:id/comments/:comment_id', async (request, response) => {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+    const user = await User.findById(decodedToken.id)
+
+    // find id of user who posted the blog
+    const blog = await Blog.findById(request.params.id)
+
+    if (blog.user.toString() === user._id.toString()) {
+      const idx = blog.comments.findIndex(x => x.id === request.params.comment_id)
+      blog.comments.splice(idx, 1)
+      await blog.save()
+      response.status(204).end()
+    } else {
+      response.status(401).end('Unauthorized')
     }
   })
 
