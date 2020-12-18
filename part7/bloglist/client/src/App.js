@@ -8,6 +8,7 @@ import { initializeUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
 import Login from './components/Login'
 import Home from './components/Home'
+import Container from '@material-ui/core/Container'
 
 const App = () => {
   const user = useSelector(state => state.user)
@@ -25,7 +26,7 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <div>
+    <Container maxWidth="lg">
       <Switch>
         <Route path="/users">
           {!localStorage.getItem('loggedBloglistUser') ? <Redirect to="/login" /> : <Home />}
@@ -40,7 +41,7 @@ const App = () => {
           {!localStorage.getItem('loggedBloglistUser') ? <Redirect to="/login" /> : <Redirect to="/blogs" />}
         </Route>
       </Switch>
-    </div>
+    </Container>
   )
 }
 

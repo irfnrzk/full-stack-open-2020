@@ -6,8 +6,16 @@ import Blog from '../components/Blog'
 import CreateBlog from '../components/CreateBlog'
 import Notification from '../components/Notification'
 import Togglable from '../components/Toggleable'
-import { useSelector, useDispatch } from 'react-redux'
-import { logout } from '../reducers/userReducer'
+import { useSelector } from 'react-redux'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+} from '@material-ui/core'
+import MenuHeader from './MenuHeader'
 
 
 const Home = () => {
@@ -15,24 +23,6 @@ const Home = () => {
   const user = useSelector(state => state.user)
   const users = useSelector(state => state.users)
   const blogs = useSelector(state => state.blogs)
-  const dispatch = useDispatch()
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
-
-  const handleLogout = (event) => {
-    event.preventDefault()
-    window.localStorage.removeItem('loggedBloglistUser')
-    dispatch(logout())
-  }
-
-
-  const padding = { padding: 5 }
 
   if (!user) {
     return null
@@ -40,15 +30,7 @@ const Home = () => {
 
   return (
     <div>
-      <div style={{ background: '#d3d3d3', padding: '5px' }}>
-        <Link style={padding} to="/blogs">blogs</Link>
-        <Link style={padding} to="/users">users</Link>
-        <span style={padding}>{user.name} logged in</span>
-        <button
-          name='logout'
-          onClick={handleLogout}
-        >logout</button>
-      </div>
+      <MenuHeader />
       <Notification />
       <Switch>
         <Route path="/users/:id">
@@ -68,15 +50,22 @@ const Home = () => {
           <Togglable buttonLabel='create new blog' ref={blogFormRef}>
             <CreateBlog />
           </Togglable>
-          <div className='blog_list'>
-            {blogs.map(blog =>
-              <div key={blog.id} className='blog_content' style={blogStyle}>
-                <div>
-                  <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
-                </div>
-              </div>
-            )}
-          </div>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableBody>
+                {blogs.map(blog =>
+                  <TableRow key={blog.id}>
+                    <TableCell>
+                      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                    </TableCell>
+                    <TableCell>
+                      {blog.author}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Route>
       </Switch>
     </div>

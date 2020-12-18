@@ -1,8 +1,23 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogReducer'
+import {
+  Button
+} from '@material-ui/core'
+import TextField from '@material-ui/core/TextField'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    '& .MuiTextField-root': {
+      margin: theme.spacing(1),
+      width: '25ch',
+    },
+  },
+}));
 
 const CreateBlog = () => {
+  const classes = useStyles()
   const dispatch = useDispatch()
   const [newBlog, setNewBlog] = useState({
     title: '',
@@ -23,35 +38,47 @@ const CreateBlog = () => {
   return (
     <>
       <h2>create new</h2>
-      <form onSubmit={handlePost}>
+      <form className={classes.root}>
         <div>
-          title
-          <input
+          <TextField
+            id="outlined-number"
+            label="Title"
             type="text"
-            name="title"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
             value={newBlog.title}
             onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
           />
         </div>
         <div>
-          author
-          <input
+          <TextField
+            id="outlined-number"
+            label="Author"
             type="text"
-            name="author"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
             value={newBlog.author}
             onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
           />
         </div>
         <div>
-          url
-          <input
-            type="url"
-            name="url"
+          <TextField
+            id="outlined-number"
+            label="URL"
+            type="text"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
             value={newBlog.url}
             onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
           />
         </div>
-        <button type="submit">create</button>
+        <Button variant="contained" color="primary" onClick={handlePost}>create</Button>
       </form>
     </>
   )
