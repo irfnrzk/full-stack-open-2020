@@ -14,7 +14,7 @@ const ALL_AUTHORS = gql`
     }
   }
 `
-const ALL_BOOKS = gql`
+export const ALL_BOOKS = gql`
   query {
     allBooks{
       title,
@@ -25,8 +25,12 @@ const ALL_BOOKS = gql`
 `
 
 const App = () => {
-  const authors = useQuery(ALL_AUTHORS)
-  const books = useQuery(ALL_BOOKS)
+  const authors = useQuery(ALL_AUTHORS, {
+    pollInterval: 2000
+  })
+  const books = useQuery(ALL_BOOKS, {
+    pollInterval: 2000
+  })
   const [page, setPage] = useState('authors')
 
   if (authors.loading || books.loading) {
