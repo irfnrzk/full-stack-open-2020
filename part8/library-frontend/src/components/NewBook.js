@@ -36,7 +36,12 @@ const NewBook = (props) => {
 
     console.log('add book...')
     console.log({ variables: { title, author, published: Number(published), genres } })
+
     addBook({ variables: { title, author, published: Number(published), genres } })
+      .then()
+      .catch(err => {
+        alert(err.message)
+      })
 
     setTitle('')
     setPublished('')
