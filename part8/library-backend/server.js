@@ -157,9 +157,9 @@ const resolvers = {
     editAuthor: (_, args) => {
       const author = authors.find(a => a.name === args.name)
       if (author) {
-        const updateAuthor = { ...author, born: args.setBornTo }
-        authors = authors.concat(updateAuthor)
-        return updateAuthor
+        const updatedAuthor = { ...author, born: args.setBornTo }
+        authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
+        return updatedAuthor
       } else {
         return null
       }

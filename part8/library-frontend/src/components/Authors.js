@@ -1,7 +1,9 @@
 
-import React from 'react'
+import React, { useState } from 'react'
+import SetBirthYear from './SetBirthYear'
 
 const Authors = (props) => {
+  const [author, setAuthor] = useState(null)
   if (!props.show) {
     return null
   }
@@ -22,7 +24,7 @@ const Authors = (props) => {
             </th>
           </tr>
           {authors.map(a =>
-            <tr key={a.name}>
+            <tr key={a.name} onClick={() => { console.log(a); setAuthor(a) }}>
               <td>{a.name}</td>
               <td>{a.born}</td>
               <td>{a.bookCount}</td>
@@ -30,7 +32,7 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-
+      <SetBirthYear author={author} />
     </div>
   )
 }
