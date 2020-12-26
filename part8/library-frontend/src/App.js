@@ -18,24 +18,28 @@ export const ALL_BOOKS = gql`
   query {
     allBooks{
       title,
-      author,
-      published
+      published,
+      author {
+        name
+      }
     }
   }
 `
 
 const App = () => {
   const authors = useQuery(ALL_AUTHORS, {
-    pollInterval: 2000
+    // pollInterval: 2000
   })
   const books = useQuery(ALL_BOOKS, {
-    pollInterval: 2000
+    // pollInterval: 2000
   })
   const [page, setPage] = useState('authors')
 
   if (authors.loading || books.loading) {
     return <div>loading...</div>
   }
+
+  console.log(books.data.allBooks ? 'ada' : 'xde')
 
   return (
     <div>

@@ -10,15 +10,17 @@ const ADD_BOOK = gql`
       genres: $genres
     ) {
       title,
-      author,
       published
+      author {
+        name
+      }
     }
   }
 `
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
-  const [author, setAuhtor] = useState('')
+  const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
@@ -33,11 +35,12 @@ const NewBook = (props) => {
     event.preventDefault()
 
     console.log('add book...')
+    console.log({ variables: { title, author, published: Number(published), genres } })
     addBook({ variables: { title, author, published: Number(published), genres } })
 
     setTitle('')
     setPublished('')
-    setAuhtor('')
+    setAuthor('')
     setGenres([])
     setGenre('')
   }
@@ -61,7 +64,7 @@ const NewBook = (props) => {
           author
           <input
             value={author}
-            onChange={({ target }) => setAuhtor(target.value)}
+            onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
