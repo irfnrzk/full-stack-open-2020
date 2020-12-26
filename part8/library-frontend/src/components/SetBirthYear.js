@@ -27,6 +27,8 @@ const SetBirthYear = ({ author }) => {
       const name = author.name
       const setBornTo = Number(bornYear)
       editBirthYear({ variables: { name, setBornTo } })
+        .then()
+        .catch(err => alert(err.message))
     } else {
       alert('Nothing to update!')
     }
