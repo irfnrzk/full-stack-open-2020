@@ -34,16 +34,7 @@ const SetBirthYear = ({ author }) => {
 
   return (
     <>
-      <h2>Set birthyear</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          name
-          <input
-            type='text'
-            value={author ? author.name : ''}
-            disabled
-          />
-        </div>
         <div>
           born
           <input

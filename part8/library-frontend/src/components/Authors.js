@@ -1,13 +1,25 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SetBirthYear from './SetBirthYear'
 
 const Authors = (props) => {
   const [author, setAuthor] = useState(null)
+
+  useEffect(() => {
+    if (authors.length > 0) {
+      setAuthor(authors[0])
+    }
+    // eslint-disable-next-line
+  }, [])
+
   if (!props.show) {
     return null
   }
   const authors = props.authors
+
+  const handleSelect = (e) => {
+    setAuthor(authors.filter(a => a.name === e.target.value)[0])
+  }
 
   return (
     <div>
@@ -24,7 +36,7 @@ const Authors = (props) => {
             </th>
           </tr>
           {authors.map(a =>
-            <tr key={a.name} onClick={() => { console.log(a); setAuthor(a) }}>
+            <tr key={a.name} onClick={() => { setAuthor(a) }}>
               <td>{a.name}</td>
               <td>{a.born}</td>
               <td>{a.bookCount}</td>
@@ -32,6 +44,16 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
+      <div>
+        <h2>Set birthyear</h2>
+      </div>
+      <select onChange={handleSelect}>
+        {
+          authors.map(x => (
+            <option key={x.name} value={x.name}>{x.name}</option>
+          ))
+        }
+      </select>
       <SetBirthYear author={author} />
     </div>
   )
