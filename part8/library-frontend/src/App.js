@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import { gql, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useQuery } from '@apollo/client'
+import Login from './components/Login'
 
 const ALL_AUTHORS = gql`
   query {
@@ -33,20 +34,39 @@ const App = () => {
   const books = useQuery(ALL_BOOKS, {
     // pollInterval: 2000
   })
+  const client = useApolloClient()
   const [page, setPage] = useState('authors')
 
   if (authors.loading || books.loading) {
     return <div>loading...</div>
   }
 
-  console.log(books.data.allBooks ? 'ada' : 'xde')
+  const Buttons = () => {
+
+    const handleLogout = () => {
+      localStorage.clear()
+      client.resetStore()
+      window.location.reload()
+    }
+
+    return (
+      <>
+        <button onClick={() => setPage('add')}>add book</button>
+        <button onClick={handleLogout}>logout</button>
+      </>
+    )
+  }
 
   return (
     <div>
       <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
+        {
+          localStorage.getItem('token') ?
+            <Buttons /> :
+            <button onClick={() => setPage('login')}>login</button>
+        }
       </div>
 
       <Authors
@@ -61,6 +81,10 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+      />
+
+      <Login
+        show={page === 'login'}
       />
 
     </div>
