@@ -1,9 +1,9 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import { gql, useApolloClient, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useQuery } from '@apollo/client'
 import Login from './components/Login'
 import Recommended from './components/Recommended'
 
@@ -44,6 +44,18 @@ const ALL_ME = gql`
   }
 `
 
+const ALL_RECOMMENDED_BOOKS = gql`
+  query allBooks($genre: String!){
+    allBooks(genre: $genre){
+      title,
+      author{
+        name
+      },
+      published
+    }
+  }
+`
+
 const App = () => {
   const authors = useQuery(ALL_AUTHORS, {
     // pollInterval: 2000
@@ -57,20 +69,16 @@ const App = () => {
   const me = useQuery(ALL_ME, {
     // pollInterval: 2000
   })
+  const [getBooks, result] = useLazyQuery(ALL_RECOMMENDED_BOOKS)
   const client = useApolloClient()
   const [page, setPage] = useState('authors')
-  // const [recommendedBooks, setRecommendedBooks] = useState([])
-
-  // useEffect(() => {
-  //   if (me.data) {
-
-  //     console.log(me.data.me)
-  //   }
-  //   // console.log(books.filter(x => x.genres.includes(me.data.me.favoriteGenre)))
-  // }, [books, me])
 
   if (authors.loading || books.loading || genres.loading || me.loading) {
     return <div>loading...</div>
+  }
+
+  const showGenre = () => {
+    getBooks({ variables: { genre: me.data.me.favoriteGenre } })
   }
 
   const Buttons = () => {
@@ -84,7 +92,7 @@ const App = () => {
     return (
       <>
         <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={() => setPage('recommended')}>recommended</button>
+        <button onClick={() => { showGenre(); setPage('recommended') }}>recommended</button>
         <button onClick={handleLogout}>logout</button>
       </>
     )
@@ -120,7 +128,7 @@ const App = () => {
       <Recommended
         show={page === 'recommended'}
         genre={me.data.me ? me.data.me.favoriteGenre : null}
-        books={me.data.me ? books.data.allBooks.filter(x => x.genres.includes(me.data.me.favoriteGenre)) : null}
+        books={result.data}
       />
 
       <Login

@@ -100,6 +100,9 @@ const resolvers = {
       if (args.author !== undefined) {
         findBook = findBook.filter(b => b.author.name === args.author)
       }
+      if (args.genre !== undefined) {
+        findBook = findBook.filter(b => b.genres.includes(args.genre))
+      }
       return findBook
     },
     allGenres: async (_, args) => {

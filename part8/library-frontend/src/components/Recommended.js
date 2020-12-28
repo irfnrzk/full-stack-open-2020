@@ -6,6 +6,10 @@ const Recommended = (props) => {
     return null
   }
 
+  if (!props.books) {
+    return <>loading...</>
+  }
+
   return (
     <>
       <h2>recommendation</h2>
@@ -17,12 +21,12 @@ const Recommended = (props) => {
               <th></th>
               <th>
                 author
-            </th>
+              </th>
               <th>
                 published
             </th>
             </tr>
-            {props.books.map(a =>
+            {props.books.allBooks.map(a =>
               <tr key={a.title}>
                 <td>{a.title}</td>
                 <td>{a.author.name}</td>
