@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import { gql, useApolloClient, useLazyQuery, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import Login from './components/Login'
 import Recommended from './components/Recommended'
 
@@ -56,20 +56,45 @@ const ALL_RECOMMENDED_BOOKS = gql`
   }
 `
 
+const ADD_BOOK = gql`
+  mutation addBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
+    addBook(
+      title: $title,
+      author: $author,
+      published: $published,
+      genres: $genres
+    ) {
+      title,
+      published
+      author {
+        name
+      }
+    }
+  }
+`
+
 const App = () => {
-  const authors = useQuery(ALL_AUTHORS, {
-    // pollInterval: 2000
+  const authors = useQuery(ALL_AUTHORS)
+  const books = useQuery(ALL_BOOKS)
+  const genres = useQuery(ALL_GENRES)
+  const me = useQuery(ALL_ME)
+  const [getBooks, result] = useLazyQuery(ALL_RECOMMENDED_BOOKS, { fetchPolicy: 'no-cache' })
+  const [addBook] = useMutation(ADD_BOOK, {
+    onError: (error) => {
+      alert(error.graphQLErrors[0].message)
+    },
+    update: (store, response) => {
+      const dataInStore = store.readQuery({ query: ALL_BOOKS })
+      store.writeQuery({
+        query: ALL_BOOKS,
+        data: {
+          ...dataInStore,
+          allBooks: [...dataInStore.allBooks, response.data.addBook]
+        }
+      })
+    }
   })
-  const books = useQuery(ALL_BOOKS, {
-    // pollInterval: 2000
-  })
-  const genres = useQuery(ALL_GENRES, {
-    // pollInterval: 2000
-  })
-  const me = useQuery(ALL_ME, {
-    // pollInterval: 2000
-  })
-  const [getBooks, result] = useLazyQuery(ALL_RECOMMENDED_BOOKS)
+
   const client = useApolloClient()
   const [page, setPage] = useState('authors')
 
@@ -98,6 +123,10 @@ const App = () => {
     )
   }
 
+  const handleAddBook = (param) => {
+    addBook(param)
+  }
+
   return (
     <div>
       <div>
@@ -123,6 +152,7 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+        addBook={handleAddBook}
       />
 
       <Recommended
