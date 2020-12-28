@@ -15,15 +15,22 @@ const ALL_AUTHORS = gql`
     }
   }
 `
-export const ALL_BOOKS = gql`
+const ALL_BOOKS = gql`
   query {
     allBooks{
       title,
       published,
+      genres,
       author {
         name
       }
     }
+  }
+`
+
+const ALL_GENRES = gql`
+  query {
+    allGenres
   }
 `
 
@@ -32,6 +39,9 @@ const App = () => {
     // pollInterval: 2000
   })
   const books = useQuery(ALL_BOOKS, {
+    // pollInterval: 2000
+  })
+  const genres = useQuery(ALL_GENRES, {
     // pollInterval: 2000
   })
   const client = useApolloClient()
@@ -77,6 +87,7 @@ const App = () => {
       <Books
         show={page === 'books'}
         books={books.data.allBooks}
+        genres={genres.data.allGenres}
       />
 
       <NewBook

@@ -4,6 +4,7 @@ const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
 const jwt = require('jsonwebtoken')
+const { find } = require('./models/author')
 
 const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
@@ -25,6 +26,7 @@ const typeDefs = gql`
     authorCount: Int!
     allBooks(author: String, genre: String): [Book]
     allAuthors: [Author!]!
+    allGenres: [String]
     findBookCount(name: String!): Book
     me: User
   }
@@ -92,6 +94,23 @@ const resolvers = {
     },
     allAuthors: async () => {
       return await Author.find({})
+    },
+    allBooks: async (_, args) => {
+      let findBook = await Book.find({}).populate('author')
+      if (args.author !== undefined) {
+        findBook = findBook.filter(b => b.author.name === args.author)
+      }
+      return findBook
+    },
+    allGenres: async (_, args) => {
+      let findBook = await Book.find({})
+      const Arr = []
+      findBook.forEach(x => {
+        x.genres.forEach(y => {
+          Arr.push(y)
+        })
+      })
+      return [...new Set(Arr)]
     },
     me: (root, args, context) => {
       return context.currentUser
