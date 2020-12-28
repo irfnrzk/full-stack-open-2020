@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import { gql, useApolloClient, useQuery } from '@apollo/client'
 import Login from './components/Login'
+import Recommended from './components/Recommended'
 
 const ALL_AUTHORS = gql`
   query {
@@ -34,6 +35,15 @@ const ALL_GENRES = gql`
   }
 `
 
+const ALL_ME = gql`
+  query {
+    me {
+      username,
+      favoriteGenre
+    }
+  }
+`
+
 const App = () => {
   const authors = useQuery(ALL_AUTHORS, {
     // pollInterval: 2000
@@ -44,10 +54,22 @@ const App = () => {
   const genres = useQuery(ALL_GENRES, {
     // pollInterval: 2000
   })
+  const me = useQuery(ALL_ME, {
+    // pollInterval: 2000
+  })
   const client = useApolloClient()
   const [page, setPage] = useState('authors')
+  // const [recommendedBooks, setRecommendedBooks] = useState([])
 
-  if (authors.loading || books.loading) {
+  // useEffect(() => {
+  //   if (me.data) {
+
+  //     console.log(me.data.me)
+  //   }
+  //   // console.log(books.filter(x => x.genres.includes(me.data.me.favoriteGenre)))
+  // }, [books, me])
+
+  if (authors.loading || books.loading || genres.loading || me.loading) {
     return <div>loading...</div>
   }
 
@@ -62,6 +84,7 @@ const App = () => {
     return (
       <>
         <button onClick={() => setPage('add')}>add book</button>
+        <button onClick={() => setPage('recommended')}>recommended</button>
         <button onClick={handleLogout}>logout</button>
       </>
     )
@@ -92,6 +115,12 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+      />
+
+      <Recommended
+        show={page === 'recommended'}
+        genre={me.data.me ? me.data.me.favoriteGenre : null}
+        books={me.data.me ? books.data.allBooks.filter(x => x.genres.includes(me.data.me.favoriteGenre)) : null}
       />
 
       <Login
