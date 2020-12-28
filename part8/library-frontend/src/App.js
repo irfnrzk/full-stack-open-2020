@@ -3,7 +3,14 @@ import React, { useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-import { gql, useApolloClient, useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import {
+  gql,
+  useApolloClient,
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useSubscription
+} from '@apollo/client'
 import Login from './components/Login'
 import Recommended from './components/Recommended'
 
@@ -73,6 +80,17 @@ const ADD_BOOK = gql`
   }
 `
 
+const BOOK_ADDED = gql`
+  subscription{
+    bookAdded{
+      title
+      author{
+        name
+      }
+    }
+  }
+`
+
 const App = () => {
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
@@ -92,6 +110,13 @@ const App = () => {
           allBooks: [...dataInStore.allBooks, response.data.addBook]
         }
       })
+    }
+  })
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log(subscriptionData)
+      window.alert(`${subscriptionData.data.bookAdded.title} by ${subscriptionData.data.bookAdded.author.name} has been added!`)
     }
   })
 
