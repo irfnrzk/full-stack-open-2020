@@ -17,8 +17,8 @@ import Recommended from './components/Recommended'
 const ALL_AUTHORS = gql`
   query {
     allAuthors{
-      name,
-      born,
+      name
+      born
       bookCount
     }
   }
@@ -26,9 +26,10 @@ const ALL_AUTHORS = gql`
 const ALL_BOOKS = gql`
   query {
     allBooks{
-      title,
-      published,
-      genres,
+      id
+      title
+      published
+      genres
       author {
         name
       }
@@ -45,7 +46,7 @@ const ALL_GENRES = gql`
 const ALL_ME = gql`
   query {
     me {
-      username,
+      username
       favoriteGenre
     }
   }
@@ -54,10 +55,11 @@ const ALL_ME = gql`
 const ALL_RECOMMENDED_BOOKS = gql`
   query allBooks($genre: String!){
     allBooks(genre: $genre){
-      title,
+      id
+      title
       author{
         name
-      },
+      }
       published
     }
   }
@@ -66,12 +68,13 @@ const ALL_RECOMMENDED_BOOKS = gql`
 const ADD_BOOK = gql`
   mutation addBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
     addBook(
-      title: $title,
-      author: $author,
-      published: $published,
+      title: $title
+      author: $author
+      published: $published
       genres: $genres
     ) {
-      title,
+      id
+      title
       published
       author {
         name
@@ -83,6 +86,7 @@ const ADD_BOOK = gql`
 const BOOK_ADDED = gql`
   subscription{
     bookAdded{
+      id
       title
       author{
         name
@@ -101,22 +105,31 @@ const App = () => {
     onError: (error) => {
       alert(error.graphQLErrors[0].message)
     },
-    update: (store, response) => {
-      const dataInStore = store.readQuery({ query: ALL_BOOKS })
-      store.writeQuery({
-        query: ALL_BOOKS,
-        data: {
-          ...dataInStore,
-          allBooks: [...dataInStore.allBooks, response.data.addBook]
-        }
-      })
+    update: (_, response) => {
+      updateCacheWith(response.data.addBook)
     }
   })
 
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) =>
+      set.map(p => p.id).includes(object.id)
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (dataInStore) {
+      if (!includedIn(dataInStore.allBooks, addedBook)) {
+        client.writeQuery({
+          query: ALL_BOOKS,
+          data: { allBooks: dataInStore.allBooks.concat(addedBook) }
+        })
+      }
+    }
+  }
+
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      console.log(subscriptionData)
       window.alert(`${subscriptionData.data.bookAdded.title} by ${subscriptionData.data.bookAdded.author.name} has been added!`)
+      const addedBook = subscriptionData.data.bookAdded
+      updateCacheWith(addedBook)
     }
   })
 
